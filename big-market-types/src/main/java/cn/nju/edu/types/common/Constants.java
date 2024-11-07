@@ -1,0 +1,7 @@
+package cn.nju.edu.types.common;
+
+public class Constants {
+
+    public final static String SPLIT = ",";
+
+}
