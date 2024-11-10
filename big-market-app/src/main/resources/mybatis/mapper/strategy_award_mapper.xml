@@ -25,4 +25,11 @@
         LIMIT 10
     </select>
 
+    <select id="queryStrategyAwardListByStrategyId" resultMap="dataMap" parameterType="java.lang.Long">
+        SELECT strategy_id,award_id,award_count,award_count_surplus,award_rate
+        FROM strategy_award
+        WHERE strategy_id = #{strategyId}
+    </select>
+
+
 </mapper>

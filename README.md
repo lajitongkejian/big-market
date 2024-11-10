@@ -10,16 +10,16 @@
 - 相比于mvc，ddd将启动类单独拿出来存放到一个独立的module中，存放Application
 - 存放所有的Config以及spring的yml配置文件，mybatis的xml文件、logback的配置文件也放在这里
 - config:用于bean的注册，还可以搭配ConfigProperties使用，用于给bean配置一些从yml文件中读取的属性
-    - @Component 没有明确角色的组件
-    - @Service 在业务逻辑层（Service层）使用
-    - @Repositpry 在数据访问层（dao层）使用，一般是仓储类型使用，然后再由仓储调用DAO服务
-    - @Controller 用于标注控制层组件
-    - @RestController Controller组件使用
-    - @Mapper DAO组件使用
+    - `@Component` 没有明确角色的组件
+    - `@Service` 在业务逻辑层（Service层）使用
+    - `@Repositpry` 在数据访问层（dao层）使用，一般是仓储类型使用，然后再由仓储调用DAO服务
+    - `@Controller` 用于标注控制层组件
+    - `@RestController` Controller组件使用
+    - `@Mapper` DAO组件使用
 - test单元测试，一般测试头必须要添加的注解：
-    - @Slf4j
-    - @RunWith(SpringRunner.class)
-    - @SpringBootTest
+    - `@Slf4j`
+    - `@RunWith(SpringRunner.class)`
+    - `@SpringBootTest`
       而且每个测试方法要以test_为前缀，并加上@Test注解来被ioc识别为测试方法
 
 ### 3. ddd-domain
@@ -51,6 +51,20 @@
 - 类似于mvc中的common
 - enum、自定义异常、Constants常量、工具类util
 
+
+## 数据库表
+### strategy
+- 其实代表的相当于项目的抽奖页面，一个Strategy对应一个抽奖页面，一个页面中有很多玩法，玩法就相当于rule_models中包含的值
+### strategy_rule
+- strategy与rule以及award的关系连结表，但这里我其实有一些疑问，为什么不把rule单独抽象出一个表，而是直接冗余放到strategy_rule中
+- rule包含 model（玩法种类名称）、value（玩法相关的数值）、desc（玩法的文字描述）以及type（区分是对于整个抽奖页面的玩法还是对于某个奖品的玩法）
+- rule与award的关系是多对多，一个奖品可以有多种玩法（随机积分大小、抽奖n次后解锁。。。），一个玩法也可以被多个奖品使用
+### award
+- 奖品表，无需赘述
+### strategy_award
+- 策略奖品表，用于反映每个策略中包含的奖品，同时rule_model冗余，便于查看包含了什么玩法
+
+
 ## 一些开发的细节
 ### po
 - po对象编写时，可以使用sql转java实体类工具
@@ -58,7 +72,20 @@
 - 小数一般使用BigDecimal,int(8)用Integer，大于这个长度一般用Long
 - 属性要驼峰命名，每个属性最好都要做数据库里面的注释
 - 使用Lombok那四个基本注解
+### test包
+- 每个Test类首先加上固定的三个注解`@Slf4j @RunWith(SpringRunner.class) @SpringBootTest`
+- Test类的命名就是以测试哪个类来命名的，后面加上Test即可，方法也类似，将要测试的方法名前加上一个test_的前缀即可，并将输出结果用log打印出来
+### mapper
+- mapper中一定要标识DAO对象，resultMap要标识po对象以及保证数据库表的字段和po的属性的映射
+- resultMap可以实现部分装配，可以不用全部装配
+- idea可以修改file templates生成固定的mapper.xml的文件头
+- 要在application配置文件中标出mapper位置，比如
+`mybatis:
+  mapper-locations: classpath:/mybatis/mapper/*.xml
+  config-location:  classpath:/mybatis/config/mybatis-config.xml`
+### config
+- 
 
 
-
-
+## 一些开发小技巧
+### Stream流
