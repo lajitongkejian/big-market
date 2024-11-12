@@ -1,7 +1,11 @@
 package cn.nju.edu.domain.strategy.service.armory;
 
 import cn.nju.edu.domain.strategy.model.entity.StrategyAwardEntity;
+import cn.nju.edu.domain.strategy.model.entity.StrategyEntity;
+import cn.nju.edu.domain.strategy.model.entity.StrategyRuleEntity;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
+import cn.nju.edu.types.enums.ResponseCode;
+import cn.nju.edu.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +25,13 @@ import java.util.*;
  */
 @Service
 @Slf4j
-public class StrategyArmory implements IStrategyArmory {
+public class StrategyArmory implements IStrategyArmory,IStrategyDispatch {
 
     @Resource
     private IStrategyRepository strategyRepository;
 
 
+    //这个方法暂时没啥用
     @Override
     public void assembleLotteryStrategy(Long strategyId) {
         //1.查询抽奖策略的奖品列表
@@ -69,11 +74,38 @@ public class StrategyArmory implements IStrategyArmory {
         return strategyRepository.getLotteryStrategyAwards(strategyId, new SecureRandom().nextInt(rateRange));
 
     }
-
+//获取经过抽奖规则过滤的抽奖列表
     @Override
-    public void assembleLotteryStrategy2(Long strategyId){
-        //alias算法重构
+    public boolean assembleLotteryStrategy2(Long strategyId){
+        //先装配无抽奖规则限制的的奖品策略
         List<StrategyAwardEntity> strategyAwardEntities = strategyRepository.queryStrategyAwardList(strategyId);
+        assembleLotteryStrategy2(strategyId.toString(),strategyAwardEntities);
+
+        StrategyEntity strategyEntity = strategyRepository.queryStrategyByStrategyId(strategyId);
+        String ruleWeight = strategyEntity.getRuleWeight();
+        //说明无规则限制
+        if(null == ruleWeight) return true;
+
+        StrategyRuleEntity strategyRuleEntity = strategyRepository.queryStrategyRule(strategyId,ruleWeight);
+        if (null == strategyRuleEntity) {
+            throw new AppException(ResponseCode.STRATEGY_RULE_WEIGHT_IS_NULL.getCode(), ResponseCode.STRATEGY_RULE_WEIGHT_IS_NULL.getInfo());
+        }
+        Map<String,List<Integer>> ruleWeightValues = strategyRuleEntity.getRuleWeightValues();
+        Set<String> keys = ruleWeightValues.keySet();
+        for(String key : keys){
+            List<Integer> values = ruleWeightValues.get(key);
+            List<StrategyAwardEntity> awardEntitiesFiltered = new ArrayList<>(strategyAwardEntities);
+            awardEntitiesFiltered.removeIf(entity->!values.contains(entity.getAwardId()));
+            //装配抽奖规则过滤后的奖品列表
+            assembleLotteryStrategy2(String.valueOf(strategyId).concat("_").concat(key),awardEntitiesFiltered);
+        }
+
+        return true;
+    }
+
+    public void assembleLotteryStrategy2(String key,List<StrategyAwardEntity> strategyAwardEntities){
+        //alias算法重构
+//        List<StrategyAwardEntity> strategyAwardEntities = strategyRepository.queryStrategyAwardList(strategyId);
         int size = strategyAwardEntities.size();
         BigDecimal totalProb = BigDecimal.ZERO;
         //2.初始化概率放缩后的列表、大于1的large以及小于1的small奖品表
@@ -83,10 +115,13 @@ public class StrategyArmory implements IStrategyArmory {
         List<Integer> alias = new ArrayList<>(Collections.nCopies(size, -1));
         List<Integer> awards = new ArrayList<>(Collections.nCopies(size, -1));
         int i = 0;
+        for (StrategyAwardEntity strategyAwardEntity : strategyAwardEntities){
+            totalProb = totalProb.add(strategyAwardEntity.getAwardRate());
+        }
         for (StrategyAwardEntity strategyAwardEntity : strategyAwardEntities) {
-            BigDecimal scaledAwardRate = strategyAwardEntity.getAwardRate().multiply(BigDecimal.valueOf(size));
+            BigDecimal scaledAwardRate = strategyAwardEntity.getAwardRate().multiply(BigDecimal.valueOf(size)).divide(totalProb, RoundingMode.CEILING);
             scaledAwardRates.add(scaledAwardRate);
-            totalProb = totalProb.add(scaledAwardRate);
+
             if(scaledAwardRate.compareTo(BigDecimal.ONE) < 0){
                 small.add(i++);
             }else{
@@ -115,17 +150,40 @@ public class StrategyArmory implements IStrategyArmory {
             int smallIdx = small.remove(small.size() - 1);
             awards.set(smallIdx, smallIdx);
         }
-        strategyRepository.storeLotteryStrategyAwards2(strategyId,scaledAwardRates,alias,awards);
+        strategyRepository.storeLotteryStrategyAwards2(key,scaledAwardRates,alias,awards,strategyAwardEntities);
 
     }
-    //抽奖函数
+
+    //抽奖函数,无规则过滤
     @Override
     public Integer getRandomAwardId2(Long strategyId) {
         SecureRandom secureRandom = new SecureRandom();
-        List<BigDecimal> scaledAwardRates = strategyRepository.getScaledAwardRates(strategyId);
-        List<Integer> alias = strategyRepository.getLotteryAliasList(strategyId);
-        List<Integer> awards = strategyRepository.getLotteryAwardsList(strategyId);
+        String key = String.valueOf(strategyId);
+        List<BigDecimal> scaledAwardRates = strategyRepository.getScaledAwardRates(key);
+        List<Integer> alias = strategyRepository.getLotteryAliasList(key);
+        List<Integer> awards = strategyRepository.getLotteryAwardsList(key);
         List<StrategyAwardEntity> strategyAwardEntities = strategyRepository.queryStrategyAwardList(strategyId);
+        int index = secureRandom.nextInt(strategyAwardEntities.size());
+
+        BigDecimal rate = BigDecimal.valueOf(secureRandom.nextDouble());
+        if(rate.compareTo(scaledAwardRates.get(index)) < 0){
+            return strategyAwardEntities.get(awards.get(index)).getAwardId();
+        }else{
+            return alias.get(index) == -1 ? strategyAwardEntities.get(awards.get(index)).getAwardId() :
+                    strategyAwardEntities.get(alias.get(index)).getAwardId();
+        }
+    }
+
+
+    //抽奖函数,有规则过滤
+    @Override
+    public Integer getRandomAwardId2(Long strategyId, String ruleWeightValue) {
+        SecureRandom secureRandom = new SecureRandom();
+        String key = String.valueOf(strategyId).concat("_").concat(ruleWeightValue);
+        List<BigDecimal> scaledAwardRates = strategyRepository.getScaledAwardRates(key);
+        List<Integer> alias = strategyRepository.getLotteryAliasList(key);
+        List<Integer> awards = strategyRepository.getLotteryAwardsList(key);
+        List<StrategyAwardEntity> strategyAwardEntities = strategyRepository.queryStrategyAwardList(key);
         int index = secureRandom.nextInt(strategyAwardEntities.size());
 
         BigDecimal rate = BigDecimal.valueOf(secureRandom.nextDouble());

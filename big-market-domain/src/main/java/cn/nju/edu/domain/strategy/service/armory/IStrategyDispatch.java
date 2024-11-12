@@ -1,0 +1,18 @@
+package cn.nju.edu.domain.strategy.service.armory;
+
+/**
+ * 项目名称：big-market
+ * 类名称：IStrategyDispath
+ * 作者：tkj
+ * 日期：2024/11/12
+ * 描述：负责策略抽奖的服务模块
+ */
+public interface IStrategyDispatch {
+    //根据策略id进行奖品抽取，也就是抽奖方法
+
+    Integer getRandomAwardId(Long strategyId);
+    //权重过滤规则抽奖
+    Integer getRandomAwardId2(Long strategyId,String ruleWeightValue);
+    //无过滤规则
+    Integer getRandomAwardId2(Long strategyId);
+}

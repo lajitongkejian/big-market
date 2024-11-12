@@ -1,10 +1,15 @@
 package cn.nju.edu.infrastructure.persistent.repository;
 
 import cn.nju.edu.domain.strategy.model.entity.StrategyAwardEntity;
+import cn.nju.edu.domain.strategy.model.entity.StrategyEntity;
+import cn.nju.edu.domain.strategy.model.entity.StrategyRuleEntity;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
 import cn.nju.edu.infrastructure.persistent.dao.IStrategyAwardDao;
 import cn.nju.edu.infrastructure.persistent.dao.IStrategyDao;
+import cn.nju.edu.infrastructure.persistent.dao.IStrategyRuleDao;
+import cn.nju.edu.infrastructure.persistent.po.Strategy;
 import cn.nju.edu.infrastructure.persistent.po.StrategyAward;
+import cn.nju.edu.infrastructure.persistent.po.StrategyRule;
 import cn.nju.edu.infrastructure.persistent.redis.RedissonService;
 import cn.nju.edu.types.common.Constants;
 import org.redisson.api.RMap;
@@ -24,7 +29,7 @@ import java.util.*;
  * 描述：策略仓储实现类,负责内存与硬盘存储判断、po转dto操作
  */
 @Repository
-public class StrategyRepository implements IStrategyRepository {
+public class StrategyRepository implements IStrategyRepository{
 
 
     @Resource
@@ -32,6 +37,12 @@ public class StrategyRepository implements IStrategyRepository {
 
     @Resource
     private RedissonService redissonService;
+
+    @Resource
+    private IStrategyDao strategyDao;
+
+    @Resource
+    private IStrategyRuleDao strategyRuleDao;
 
 
 
@@ -74,20 +85,26 @@ public class StrategyRepository implements IStrategyRepository {
     }
 
     @Override
-    public void storeLotteryStrategyAwards2(Long strategyId, List<BigDecimal> scaledAwardRates, List<Integer> alias, List<Integer> awards) {
-        String scaledRatesCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_SCALEDRATE_KEY + strategyId;
-        String awardsCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_AWARDS_KEY + strategyId;
-        String aliasCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_ALIAS_KEY + strategyId;
+    public List<StrategyAwardEntity> queryStrategyAwardList(String key) {
+        return redissonService.getValue(Constants.RedisKey.STRATEGY_AWARD_KEY + key);
+    }
+
+    @Override
+    public void storeLotteryStrategyAwards2(String key, List<BigDecimal> scaledAwardRates, List<Integer> alias, List<Integer> awards,List<StrategyAwardEntity> strategyAwardEntities) {
+        String scaledRatesCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_SCALEDRATE_KEY + key;
+        String awardsCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_AWARDS_KEY + key;
+        String aliasCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_ALIAS_KEY + key;
+        String awardsCacheKey2 = Constants.RedisKey.STRATEGY_AWARD_KEY+ key;
         redissonService.setValue(scaledRatesCacheKey, scaledAwardRates);
         redissonService.setValue(awardsCacheKey, awards);
         redissonService.setValue(aliasCacheKey, alias);
+        redissonService.setValue(awardsCacheKey2, strategyAwardEntities);
     }
 
     @Override
     public Integer getLotteryStrategyAwards(Long strategyId,Integer rateKey) {
         String strategyRateCacheKey = Constants.RedisKey.STRATEGY_RATE_TABLE_KEY + strategyId;
         return redissonService.getFromMap(strategyRateCacheKey,rateKey);
-
     }
 
     @Override
@@ -96,23 +113,65 @@ public class StrategyRepository implements IStrategyRepository {
         return redissonService.getValue(rateRangeCacheKey);
     }
 
+    //下面这三个有用
     @Override
-    public List<BigDecimal> getScaledAwardRates(Long strategyId) {
-        String scaledRatesCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_SCALEDRATE_KEY + strategyId;
+    public List<BigDecimal> getScaledAwardRates(String key) {
+        String scaledRatesCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_SCALEDRATE_KEY + key;
         return redissonService.getValue(scaledRatesCacheKey);
 
     }
 
     @Override
-    public List<Integer> getLotteryAliasList(Long strategyId) {
-        String aliasCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_ALIAS_KEY + strategyId;
+    public List<Integer> getLotteryAliasList(String key) {
+        String aliasCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_ALIAS_KEY + key;
         return redissonService.getValue(aliasCacheKey);
 
     }
 
     @Override
-    public List<Integer> getLotteryAwardsList(Long strategyId) {
-        String awardsCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_AWARDS_KEY + strategyId;
+    public List<Integer> getLotteryAwardsList(String key) {
+        String awardsCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_AWARDS_KEY + key;
         return redissonService.getValue(awardsCacheKey);
+    }
+
+    @Override
+    public StrategyEntity queryStrategyByStrategyId(Long strategyId) {
+        Strategy strategy = strategyDao.queryStrategyByStrategyId(strategyId);
+        StrategyEntity strategyEntity = StrategyEntity.builder()
+                  .ruleModels(strategy.getRuleModels())
+                  .strategyId(strategy.getStrategyId())
+                  .strategyDesc(strategy.getStrategyDesc())
+                  .build();
+        String cacheKey = Constants.RedisKey.STRATEGY_KEY + strategyId.toString();
+        redissonService.setValue(cacheKey, strategyEntity);
+        return strategyEntity;
+    }
+
+    @Override
+    public StrategyRuleEntity queryStrategyRule(Long strategyId, String ruleModel) {
+        StrategyRule strategyRuleReq = StrategyRule.builder()
+                .strategyId(strategyId)
+                .ruleModel(ruleModel)
+                .build();
+        StrategyRule strategyRule = strategyRuleDao.queryStrategyRule(strategyRuleReq);
+        StrategyRuleEntity strategyRuleEntity = StrategyRuleEntity.builder()
+                  .strategyId(strategyRule.getStrategyId())
+                  .awardId(strategyRule.getAwardId())
+                  .ruleType(strategyRule.getRuleType())
+                  .ruleModel(strategyRule.getRuleModel())
+                  .ruleValue(strategyRule.getRuleValue())
+                  .ruleDesc(strategyRule.getRuleDesc())
+                  .build();
+        return strategyRuleEntity;
+    }
+
+    @Override
+    public String queryStrategyRuleValue(Long strategyId, Integer awardId, String ruleModel) {
+        return strategyRuleDao.queryStrategyRuleValue(StrategyRule.builder()
+                        .strategyId(strategyId)
+                        .ruleModel(ruleModel)
+                        .awardId(awardId)
+                        .build());
+
     }
 }

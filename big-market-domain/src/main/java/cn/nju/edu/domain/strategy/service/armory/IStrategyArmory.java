@@ -11,10 +11,7 @@ public interface IStrategyArmory {
     //根据策略id装配奖品表，存入缓存
     void assembleLotteryStrategy(Long strategyId);
     //重构alias抽奖算法
-    void assembleLotteryStrategy2(Long strategyId);
+    boolean assembleLotteryStrategy2(Long strategyId);
 
-    //根据策略id进行奖品抽取，也就是抽奖方法
-    Integer getRandomAwardId(Long strategyId);
 
-    Integer getRandomAwardId2(Long strategyId);
 }

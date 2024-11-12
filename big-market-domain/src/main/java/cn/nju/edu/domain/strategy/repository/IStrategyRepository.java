@@ -1,6 +1,8 @@
 package cn.nju.edu.domain.strategy.repository;
 
 import cn.nju.edu.domain.strategy.model.entity.StrategyAwardEntity;
+import cn.nju.edu.domain.strategy.model.entity.StrategyEntity;
+import cn.nju.edu.domain.strategy.model.entity.StrategyRuleEntity;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -15,9 +17,10 @@ import java.util.List;
  */
 public interface IStrategyRepository {
 
+    //查询无规则过滤奖品列表
     List<StrategyAwardEntity> queryStrategyAwardList(Long strategyId);
-
-
+    //查询有规则过滤奖品列表
+    List<StrategyAwardEntity> queryStrategyAwardList(String key);
 
     void storeLotteryStrategyAwards(Long strategyId, HashMap<Integer, Integer> map, Integer range);
 
@@ -25,13 +28,21 @@ public interface IStrategyRepository {
 
     Integer getRateRange(Long strategyId);
 
-    
+    //alias算法
 
-    void storeLotteryStrategyAwards2(Long strategyId, List<BigDecimal> scaledAwardRates, List<Integer> alias, List<Integer> awards);
+    void storeLotteryStrategyAwards2(String key, List<BigDecimal> scaledAwardRates, List<Integer> alias, List<Integer> awards,List<StrategyAwardEntity> strategyAwardEntities);
 
-    List<BigDecimal> getScaledAwardRates(Long strategyId);
+    List<BigDecimal> getScaledAwardRates(String key);
 
-    List<Integer> getLotteryAliasList(Long strategyId);
+    List<Integer> getLotteryAliasList(String key);
 
-    List<Integer> getLotteryAwardsList(Long strategyId);
+    List<Integer> getLotteryAwardsList(String key);
+
+
+    //根据strategyId获取Strategy
+    StrategyEntity queryStrategyByStrategyId(Long strategyId);
+
+    StrategyRuleEntity queryStrategyRule(Long strategyId,String ruleModel);
+
+    String queryStrategyRuleValue(Long strategyId, Integer awardId, String ruleModel);
 }

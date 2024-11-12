@@ -1,7 +1,9 @@
 package cn.nju.edu.test.domain;
 
 import cn.nju.edu.domain.strategy.service.armory.IStrategyArmory;
+import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,23 +25,26 @@ import javax.annotation.Resource;
 public class StrategyArmonyTest {
 
     @Resource
-    private IStrategyArmory strategyArmony;
+    private IStrategyArmory strategyArmory;
 
-    @Test
+    @Resource
+    private IStrategyDispatch strategyDispatch;
+
+    @Before
     public void test_strategyArmony(){
 //        strategyArmony.assembleLotteryStrategy(100001L);
-        strategyArmony.assembleLotteryStrategy2(100001L);
+        boolean success = strategyArmory.assembleLotteryStrategy2(100001L);
     }
 
     @Test
     public void test_getRandomAwardId(){
         int cnt1 = 0;
         for (int i = 0; i < 100; i++) {
-            Integer id = strategyArmony.getRandomAwardId2(100001L);
+            Integer id = strategyDispatch.getRandomAwardId2(100001L,"4000:102,103,104,105");
             log.info("抽奖测试：奖品id：{}",id);
-            if(id==101) cnt1++;
+            if(id==102) cnt1++;
         }
-        log.info("101被抽到了{}次",cnt1);
+        log.info("102被抽到了{}次",cnt1);
 
 
     }
