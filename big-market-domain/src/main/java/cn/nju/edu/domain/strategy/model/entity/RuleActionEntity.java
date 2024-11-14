@@ -51,4 +51,22 @@ public class RuleActionEntity<T extends RuleActionEntity.RaffleEntity> {
          */
         private Integer awardId;
     }
+//    @Data
+//    @AllArgsConstructor
+//    @NoArgsConstructor
+//    @Builder
+//    @EqualsAndHashCode(callSuper = true)
+    static public class RaffleAfterEntity extends RaffleEntity{
+
+    }
+
+//    @Data
+//    @AllArgsConstructor
+//    @NoArgsConstructor
+//    @Builder
+//    @EqualsAndHashCode(callSuper = true)
+    static public class RaffleProceedEntity extends RaffleEntity{
+
+
+    }
 }

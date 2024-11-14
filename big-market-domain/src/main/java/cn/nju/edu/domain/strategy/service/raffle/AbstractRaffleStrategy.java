@@ -5,6 +5,7 @@ import cn.nju.edu.domain.strategy.model.entity.RaffleFactorEntity;
 import cn.nju.edu.domain.strategy.model.entity.RuleActionEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyEntity;
 import cn.nju.edu.domain.strategy.model.vo.RuleLogicCheckTypeVO;
+import cn.nju.edu.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
 import cn.nju.edu.domain.strategy.service.IRaffleStrategy;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
@@ -66,6 +67,22 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
         }
         //4.走默认抽奖流程
         Integer awardId = strategyDispatch.getRandomAwardId2(strategyId);
+
+        //5.根据这个所抽到的奖品进行是否解锁的判断,先查询此奖品有什么抽奖规则
+        StrategyAwardRuleModelVO ruleModels = strategyRepository.queryStrategyAwardRuleModel(awardId,strategyId);
+        String[] proceedModels = ruleModels.splitProceedRuleModels();
+        RuleActionEntity<RuleActionEntity.RaffleProceedEntity> raffleProceedEntity= doCheckLogicProceedRaffle(RaffleFactorEntity.builder()
+                .strategyId(strategyId)
+                .awardId(awardId)
+                .userId(userId)
+                .build(), proceedModels);
+
+        if(RuleLogicCheckTypeVO.TAKE_OVER.getCode().equals(raffleProceedEntity.getCode())){
+            log.info("中奖中规则拦截，通过抽奖后规则rule_award_lucky走保底奖励");
+            return RaffleAwardEntity.builder()
+                    .awardDesc("中奖中规则拦截，通过抽奖后规则rule_award_lucky走保底奖励")
+                    .build();
+        }
         return RaffleAwardEntity.builder()
                 .awardId(awardId)
                 .build();
@@ -73,6 +90,8 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
     }
 
     protected abstract RuleActionEntity<RuleActionEntity.RaffleBeforeEntity> doCheckLogicBeforeRaffle(RaffleFactorEntity build, String... logics);
+
+    protected abstract RuleActionEntity<RuleActionEntity.RaffleProceedEntity> doCheckLogicProceedRaffle(RaffleFactorEntity build, String... logics);
 
 
 

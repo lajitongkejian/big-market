@@ -19,7 +19,7 @@ import java.util.*;
  * 类名称：RuleWeightLogicFilter
  * 作者：tkj
  * 日期：2024/11/12
- * 描述：
+ * 描述：抽奖权重值规则过滤，比如用户持有不同积分时奖品池是不同的，过滤进入到哪个奖品池
  */
 @Slf4j
 @Component
@@ -67,7 +67,7 @@ public class RuleWeightLogicFilter implements ILogicFilter<RuleActionEntity.Raff
                 .info(RuleLogicCheckTypeVO.ALLOW.getInfo())
                 .build();
     }
-
+//切割ruleValues字符串
     public Map<Long,String> splitRuleWeight(String ruleValue){
         String[] ruleValues = ruleValue.split(Constants.SPACE);
         HashMap<Long,String> map = new HashMap<>();

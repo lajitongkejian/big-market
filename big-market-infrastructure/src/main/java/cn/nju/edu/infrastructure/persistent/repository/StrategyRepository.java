@@ -3,6 +3,7 @@ package cn.nju.edu.infrastructure.persistent.repository;
 import cn.nju.edu.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyRuleEntity;
+import cn.nju.edu.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
 import cn.nju.edu.infrastructure.persistent.dao.IStrategyAwardDao;
 import cn.nju.edu.infrastructure.persistent.dao.IStrategyDao;
@@ -173,5 +174,14 @@ public class StrategyRepository implements IStrategyRepository{
                         .awardId(awardId)
                         .build());
 
+    }
+
+    @Override
+    public StrategyAwardRuleModelVO queryStrategyAwardRuleModel(Integer awardId, Long strategyId) {
+        String ruleModels =  strategyAwardDao.queryStrategyAwardRule(StrategyRule.builder()
+                .awardId(awardId)
+                .strategyId(strategyId)
+                .build());
+        return StrategyAwardRuleModelVO.builder().ruleModels(ruleModels).build();
     }
 }

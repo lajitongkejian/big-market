@@ -32,4 +32,10 @@
     </select>
 
 
+    <select id="queryStrategyAwardRule" resultType="java.lang.String" parameterType="cn.nju.edu.infrastructure.persistent.po.StrategyAward">
+        select rule_models
+        from strategy_award
+        where strategy_id = #{strategyId} AND award_id = #{awardId}
+    </select>
+
 </mapper>

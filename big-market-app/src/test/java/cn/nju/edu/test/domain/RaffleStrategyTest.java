@@ -5,6 +5,7 @@ import cn.nju.edu.domain.strategy.model.entity.RaffleFactorEntity;
 import cn.nju.edu.domain.strategy.service.IRaffleStrategy;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyArmory;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
+import cn.nju.edu.domain.strategy.service.rule.impl.RuleLockLogicFilter;
 import cn.nju.edu.domain.strategy.service.rule.impl.RuleWeightLogicFilter;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
@@ -44,10 +45,17 @@ public class RaffleStrategyTest {
     @Resource
     private RuleWeightLogicFilter ruleWeightLogicFilter;
 
+    @Resource
+    private RuleLockLogicFilter ruleLockLogicFilter;
+
     @Before
     public void test_setUp(){
 //        strategyArmony.assembleLotteryStrategy(100001L);
         ReflectionTestUtils.setField(ruleWeightLogicFilter,"userPoints",4500L);
+        ReflectionTestUtils.setField(ruleLockLogicFilter,"userRaffleCount",10L);
+        strategyArmory.assembleLotteryStrategy2(100001L);
+        strategyArmory.assembleLotteryStrategy2(100002L);
+        strategyArmory.assembleLotteryStrategy2(100003L);
     }
 
     @Test
@@ -91,6 +99,19 @@ public class RaffleStrategyTest {
         RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(raffleFactorEntity);
         log.info("测试参数：{}", JSON.toJSONString(raffleFactorEntity));
         log.info("测试结果：{}", JSON.toJSONString(raffleAwardEntity));
+    }
+
+    @Test
+    public void test_performRaffle4(){
+        RaffleFactorEntity raffleFactorEntity = RaffleFactorEntity.builder()
+                .strategyId(100003L)
+                .userId("abc")
+                .build();
+
+        RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(raffleFactorEntity);
+        log.info("测试参数：{}", JSON.toJSONString(raffleFactorEntity));
+        log.info("测试结果：{}", JSON.toJSONString(raffleAwardEntity));
+
     }
 
 }
