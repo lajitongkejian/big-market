@@ -1,6 +1,6 @@
 package cn.nju.edu.domain.strategy.service.annotation;
 
-import cn.nju.edu.domain.strategy.service.rule.factory.DefaultLogicFactory;
+import cn.nju.edu.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

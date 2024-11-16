@@ -5,11 +5,10 @@ import cn.nju.edu.domain.strategy.model.entity.RaffleFactorEntity;
 import cn.nju.edu.domain.strategy.service.IRaffleStrategy;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyArmory;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
-import cn.nju.edu.domain.strategy.service.rule.impl.RuleLockLogicFilter;
-import cn.nju.edu.domain.strategy.service.rule.impl.RuleWeightLogicFilter;
+import cn.nju.edu.domain.strategy.service.rule.chain.impl.RuleWeightLogicChain;
+import cn.nju.edu.domain.strategy.service.rule.filter.impl.RuleLockLogicFilter;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +42,7 @@ public class RaffleStrategyTest {
     private IRaffleStrategy raffleStrategy;
 
     @Resource
-    private RuleWeightLogicFilter ruleWeightLogicFilter;
+    private RuleWeightLogicChain ruleWeightLogicChain;
 
     @Resource
     private RuleLockLogicFilter ruleLockLogicFilter;
@@ -51,7 +50,7 @@ public class RaffleStrategyTest {
     @Before
     public void test_setUp(){
 //        strategyArmony.assembleLotteryStrategy(100001L);
-        ReflectionTestUtils.setField(ruleWeightLogicFilter,"userPoints",4500L);
+        ReflectionTestUtils.setField(ruleWeightLogicChain,"userPoints",4500L);
         ReflectionTestUtils.setField(ruleLockLogicFilter,"userRaffleCount",10L);
         strategyArmory.assembleLotteryStrategy2(100001L);
         strategyArmory.assembleLotteryStrategy2(100002L);

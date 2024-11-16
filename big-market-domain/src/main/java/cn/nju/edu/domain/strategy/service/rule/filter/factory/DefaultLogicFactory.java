@@ -1,8 +1,8 @@
-package cn.nju.edu.domain.strategy.service.rule.factory;
+package cn.nju.edu.domain.strategy.service.rule.filter.factory;
 
 import cn.nju.edu.domain.strategy.model.entity.RuleActionEntity;
 import cn.nju.edu.domain.strategy.service.annotation.LogicStrategy;
-import cn.nju.edu.domain.strategy.service.rule.ILogicFilter;
+import cn.nju.edu.domain.strategy.service.rule.filter.ILogicFilter;
 import com.alibaba.fastjson2.util.AnnotationUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package cn.nju.edu.domain.strategy.service.raffle;
+package cn.nju.edu.domain.strategy.service;
 
 import cn.nju.edu.domain.strategy.model.entity.RaffleFactorEntity;
 import cn.nju.edu.domain.strategy.model.entity.RuleActionEntity;
@@ -6,15 +6,14 @@ import cn.nju.edu.domain.strategy.model.entity.RuleMatterEntity;
 import cn.nju.edu.domain.strategy.model.vo.RuleLogicCheckTypeVO;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
-import cn.nju.edu.domain.strategy.service.rule.ILogicFilter;
-import cn.nju.edu.domain.strategy.service.rule.factory.DefaultLogicFactory;
-import cn.nju.edu.types.enums.ResponseCode;
-import cn.nju.edu.types.exception.AppException;
+import cn.nju.edu.domain.strategy.service.raffle.AbstractRaffleStrategy;
+import cn.nju.edu.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
+import cn.nju.edu.domain.strategy.service.rule.filter.ILogicFilter;
+import cn.nju.edu.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -31,11 +30,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
 
-    @Resource
     private DefaultLogicFactory logicFactory;
 
-    public DefaultRaffleStrategy(IStrategyRepository strategyRepository, IStrategyDispatch strategyDispatch) {
-        super(strategyRepository, strategyDispatch);
+    public DefaultRaffleStrategy(IStrategyRepository strategyRepository, IStrategyDispatch strategyDispatch, DefaultChainFactory chainFactory) {
+        super(strategyRepository, strategyDispatch, chainFactory);
     }
 
     @Override

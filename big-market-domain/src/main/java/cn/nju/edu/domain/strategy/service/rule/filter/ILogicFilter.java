@@ -1,4 +1,4 @@
-package cn.nju.edu.domain.strategy.service.rule;
+package cn.nju.edu.domain.strategy.service.rule.filter;
 
 
 import cn.nju.edu.domain.strategy.model.entity.RuleActionEntity;

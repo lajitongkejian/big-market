@@ -1,13 +1,10 @@
 package cn.nju.edu.domain.strategy.model.vo;
 
-import cn.nju.edu.domain.strategy.service.rule.factory.DefaultLogicFactory;
+import cn.nju.edu.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
 import cn.nju.edu.types.common.Constants;
 import lombok.*;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 项目名称：big-market

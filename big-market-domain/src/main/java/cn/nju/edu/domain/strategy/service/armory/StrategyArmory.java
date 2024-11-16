@@ -106,6 +106,7 @@ public class StrategyArmory implements IStrategyArmory,IStrategyDispatch {
     public void assembleLotteryStrategy2(String key,List<StrategyAwardEntity> strategyAwardEntities){
         //alias算法重构
 //        List<StrategyAwardEntity> strategyAwardEntities = strategyRepository.queryStrategyAwardList(strategyId);
+        //可以加一个判断，redis里要是存在就不用再算了
         int size = strategyAwardEntities.size();
         BigDecimal totalProb = BigDecimal.ZERO;
         //2.初始化概率放缩后的列表、大于1的large以及小于1的small奖品表
