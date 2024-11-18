@@ -1,5 +1,7 @@
 package cn.nju.edu.domain.strategy.service.rule.chain;
 
+import cn.nju.edu.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
+
 /**
  * 项目名称：big-market
  * 类名称：ILogicChain
@@ -9,6 +11,6 @@ package cn.nju.edu.domain.strategy.service.rule.chain;
  */
 public interface ILogicChain extends ILogicChainArmory{
 
-    Integer logic(String userId, Long strategyId);
+    DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId);
 
 }

@@ -49,14 +49,15 @@ public class LogicChainTest {
         strategyArmory.assembleLotteryStrategy2(100001L);
         strategyArmory.assembleLotteryStrategy2(100002L);
         strategyArmory.assembleLotteryStrategy2(100003L);
+        strategyArmory.assembleLotteryStrategy2(100006L);
     }
 
 
     @Test
     public void test_LogicChain_rule_blacklist() {
         ILogicChain logicChain = defaultChainFactory.openLogicChain(100001L);
-        Integer awardId = logicChain.logic("user001", 100001L);
-        log.info("测试结果：{}", awardId);
+        DefaultChainFactory.StrategyAwardVO strategyAwardVO = logicChain.logic("user001", 100001L);
+        log.info("测试结果：{}", strategyAwardVO.getAwardId());
     }
 
     @Test
@@ -64,23 +65,23 @@ public class LogicChainTest {
         // 通过反射 mock 规则中的值
         ReflectionTestUtils.setField(ruleWeightLogicChain, "userPoints", 4900L);
         ILogicChain logicChain = defaultChainFactory.openLogicChain(100001L);
-        Integer awardId = logicChain.logic("xiaofuge", 100001L);
-        log.info("测试结果：{}", awardId);
+        DefaultChainFactory.StrategyAwardVO strategyAwardVO = logicChain.logic("user001", 100001L);
+        log.info("测试结果：{}", strategyAwardVO.getAwardId());
     }
 
     @Test
     public void test_LogicChain_rule_default() {
         ReflectionTestUtils.setField(ruleWeightLogicChain, "userPoints", 0L);
         ILogicChain logicChain = defaultChainFactory.openLogicChain(100001L);
-        Integer awardId = logicChain.logic("xiaofuge", 100001L);
-        log.info("测试结果：{}", awardId);
+        DefaultChainFactory.StrategyAwardVO strategyAwardVO = logicChain.logic("user001", 100001L);
+        log.info("测试结果：{}", strategyAwardVO.getAwardId());
     }
 
     @Test
     public void test_performRaffle() {
         RaffleFactorEntity raffleFactorEntity = RaffleFactorEntity.builder()
                 .userId("xiaofuge")
-                .strategyId(100001L)
+                .strategyId(100006L)
                 .build();
         RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(raffleFactorEntity);
         log.info("请求参数：{}", JSON.toJSONString(raffleFactorEntity));

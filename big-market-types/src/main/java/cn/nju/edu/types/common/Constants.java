@@ -16,6 +16,9 @@ public class Constants {
         public static String STRATEGY_LOTTERY_ALIAS_KEY = "big_market_strategy_lottery_alias_key_";
         public static String STRATEGY_LOTTERY_SCALEDRATE_KEY = "big_market_strategy_lottery_scaledrate_key_";
 
+        //决策树redis前缀
+        public static String RULE_TREE_VO_KEY = "rule_tree_vo_key_";
+
         //rule_models分隔符
         public static String SPLIT = ",";
     }

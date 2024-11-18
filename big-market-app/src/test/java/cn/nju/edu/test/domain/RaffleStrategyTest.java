@@ -50,11 +50,12 @@ public class RaffleStrategyTest {
     @Before
     public void test_setUp(){
 //        strategyArmony.assembleLotteryStrategy(100001L);
-        ReflectionTestUtils.setField(ruleWeightLogicChain,"userPoints",4500L);
+        ReflectionTestUtils.setField(ruleWeightLogicChain,"userPoints",4900L);
         ReflectionTestUtils.setField(ruleLockLogicFilter,"userRaffleCount",10L);
         strategyArmory.assembleLotteryStrategy2(100001L);
-        strategyArmory.assembleLotteryStrategy2(100002L);
-        strategyArmory.assembleLotteryStrategy2(100003L);
+//        strategyArmory.assembleLotteryStrategy2(100002L);
+//        strategyArmory.assembleLotteryStrategy2(100003L);
+        strategyArmory.assembleLotteryStrategy2(100006L);
     }
 
     @Test
@@ -103,7 +104,7 @@ public class RaffleStrategyTest {
     @Test
     public void test_performRaffle4(){
         RaffleFactorEntity raffleFactorEntity = RaffleFactorEntity.builder()
-                .strategyId(100003L)
+                .strategyId(100006L)
                 .userId("abc")
                 .build();
 

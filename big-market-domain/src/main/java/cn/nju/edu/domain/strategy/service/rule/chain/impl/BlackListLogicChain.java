@@ -5,6 +5,7 @@ import cn.nju.edu.domain.strategy.model.vo.RuleLogicCheckTypeVO;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
 import cn.nju.edu.domain.strategy.service.rule.chain.AbstractLogicChain;
+import cn.nju.edu.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import cn.nju.edu.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
 import cn.nju.edu.types.common.Constants;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class BlackListLogicChain extends AbstractLogicChain {
     private IStrategyRepository strategyRepository;
 
     @Override
-    public Integer logic(String userId, Long strategyId) {
+    public DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId) {
         log.info("抽奖责任链-黑名单过滤开始 userId:{}, strategyId:{} ,ruleModel:{}", userId, strategyId, ruleModel());
         String ruleValue = strategyRepository.queryStrategyRuleValue(strategyId,ruleModel());
         String[] ruleValues = ruleValue.split(Constants.COLON);
@@ -37,7 +38,10 @@ public class BlackListLogicChain extends AbstractLogicChain {
         for(String blackUserId : blackUserIds){
             if(userId.equals(blackUserId)){
                 log.info("抽奖责任链-黑名单拦截 userId:{}, strategyId:{} ,ruleModel:{} ,awardId:{}", userId, strategyId, ruleModel(),awardId);
-                return awardId;
+                return DefaultChainFactory.StrategyAwardVO.builder()
+                        .awardId(awardId)
+                        .logicModel(ruleModel())
+                        .build();
             }
         }
         log.info("抽奖责任链-黑名单过滤通过 userId:{}, strategyId:{} ,ruleModel:{}", userId, strategyId, ruleModel());
@@ -47,6 +51,6 @@ public class BlackListLogicChain extends AbstractLogicChain {
 
     @Override
     protected String ruleModel() {
-        return "rule_blacklist";
+        return DefaultChainFactory.LogicModel.RULE_BLACKLIST.getCode();
     }
 }

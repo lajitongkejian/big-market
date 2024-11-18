@@ -3,6 +3,7 @@ package cn.nju.edu.domain.strategy.repository;
 import cn.nju.edu.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyRuleEntity;
+import cn.nju.edu.domain.strategy.model.vo.RuleTreeVO;
 import cn.nju.edu.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 
 import java.math.BigDecimal;
@@ -50,4 +51,6 @@ public interface IStrategyRepository {
     String queryStrategyRuleValue(Long strategyId, String ruleModel);
 
     StrategyAwardRuleModelVO queryStrategyAwardRuleModel(Integer awardId, Long strategyId);
+
+    RuleTreeVO queryRuleTreeVOByTreeId(String treeId);
 }

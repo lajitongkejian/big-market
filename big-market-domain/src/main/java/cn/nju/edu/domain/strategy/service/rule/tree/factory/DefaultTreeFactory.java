@@ -33,11 +33,11 @@ public class DefaultTreeFactory {
     @NoArgsConstructor
     @Builder
     //规则树执行完业务逻辑后的最终抽奖结果,是引擎处理方法的返回结果
-    public static class StrategyAwardData{
+    public static class StrategyAwardVO{
         //抽奖奖品Id
         private Integer awardId;
         //抽奖奖品规则
-        private String awardRulevalue;
+        private String awardRuleValue;
     }
 
     public IDecisionTreeEngine openLogicTree(RuleTreeVO ruleTreeVO) {
@@ -51,7 +51,7 @@ public class DefaultTreeFactory {
     @Builder
     public static class TreeActionEntity{
         private RuleLogicCheckTypeVO ruleLogicCheckType;
-        private StrategyAwardData strategyAwardData;
+        private StrategyAwardVO strategyAwardData;
     }
 
 }

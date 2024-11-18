@@ -3,6 +3,7 @@ package cn.nju.edu.domain.strategy.service.rule.chain.impl;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
 import cn.nju.edu.domain.strategy.service.rule.chain.AbstractLogicChain;
+import cn.nju.edu.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import cn.nju.edu.types.common.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.A;
@@ -32,7 +33,7 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
     private final Long userPoints = 4500L;
 
     @Override
-    public Integer logic(String userId, Long strategyId) {
+    public DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId) {
         log.info("抽奖责任链-权重过滤开始 userId:{}, strategyId:{} ,ruleModel:{}", userId, strategyId, ruleModel());
         String ruleValue = strategyRepository.queryStrategyRuleValue(strategyId,ruleModel());
         Map<Long,String> map = splitRuleWeight(ruleValue);
@@ -49,7 +50,10 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
             String awardIds = map.get(nextValue);
             Integer awardId = strategyDispatch.getRandomAwardId2(strategyId,String.valueOf(nextValue)+":"+awardIds);
             log.info("抽奖责任链-抽奖权重规则拦截 userId:{}, strategyId:{} ,ruleModel:{} ,awardId:{}", userId, strategyId, ruleModel(),awardId);
-            return awardId;
+            return DefaultChainFactory.StrategyAwardVO.builder()
+                    .awardId(awardId)
+                    .logicModel(ruleModel())
+                    .build();
         }
         log.info("抽奖责任链-抽奖权重规则过滤通过 userId:{}, strategyId:{} ,ruleModel:{}", userId, strategyId, ruleModel());
 
@@ -60,7 +64,7 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
 
     @Override
     protected String ruleModel() {
-        return "rule_weight";
+        return DefaultChainFactory.LogicModel.RULE_WEIGHT.getCode();
     }
 
     public Map<Long,String> splitRuleWeight(String ruleValue){

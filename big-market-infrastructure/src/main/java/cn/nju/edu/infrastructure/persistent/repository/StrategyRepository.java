@@ -3,14 +3,10 @@ package cn.nju.edu.infrastructure.persistent.repository;
 import cn.nju.edu.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyRuleEntity;
-import cn.nju.edu.domain.strategy.model.vo.StrategyAwardRuleModelVO;
+import cn.nju.edu.domain.strategy.model.vo.*;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
-import cn.nju.edu.infrastructure.persistent.dao.IStrategyAwardDao;
-import cn.nju.edu.infrastructure.persistent.dao.IStrategyDao;
-import cn.nju.edu.infrastructure.persistent.dao.IStrategyRuleDao;
-import cn.nju.edu.infrastructure.persistent.po.Strategy;
-import cn.nju.edu.infrastructure.persistent.po.StrategyAward;
-import cn.nju.edu.infrastructure.persistent.po.StrategyRule;
+import cn.nju.edu.infrastructure.persistent.dao.*;
+import cn.nju.edu.infrastructure.persistent.po.*;
 import cn.nju.edu.infrastructure.persistent.redis.RedissonService;
 import cn.nju.edu.types.common.Constants;
 import org.redisson.api.RMap;
@@ -44,6 +40,15 @@ public class StrategyRepository implements IStrategyRepository{
 
     @Resource
     private IStrategyRuleDao strategyRuleDao;
+
+    @Resource
+    private IRuleTreeNodeDao ruleTreeNodeDao;
+
+    @Resource
+    private IRuleTreeDao ruleTreeDao;
+
+    @Resource
+    private IRuleTreeNodeLineDao ruleTreeNodeLineDao;
 
 
 
@@ -188,5 +193,52 @@ public class StrategyRepository implements IStrategyRepository{
     @Override
     public String queryStrategyRuleValue(Long strategyId, String ruleModel) {
         return queryStrategyRuleValue(strategyId, null, ruleModel);
+    }
+
+    @Override
+    public RuleTreeVO queryRuleTreeVOByTreeId(String treeId) {
+        //优先从缓存中拿数据
+        String cacheKey = Constants.RedisKey.RULE_TREE_VO_KEY + treeId;
+        RuleTreeVO ruleTreeVOCache = redissonService.getValue(cacheKey);
+        if(null != ruleTreeVOCache) return ruleTreeVOCache;
+
+
+
+        RuleTree ruleTree = ruleTreeDao.queryRuleTreeByTreeId(treeId);
+        List<RuleTreeNodeLine> ruleTreeNodeLines = ruleTreeNodeLineDao.queryRuleTreeNodeLineListByTreeId(treeId);
+        Map<String,List<RuleTreeNodeLineVO>> map = new HashMap<>();
+        for (RuleTreeNodeLine ruleTreeNodeLine : ruleTreeNodeLines) {
+            RuleTreeNodeLineVO ruleTreeNodeLineVO = RuleTreeNodeLineVO.builder()
+                    .treeId(ruleTreeNodeLine.getTreeId())
+                    .ruleNodeTo(ruleTreeNodeLine.getRuleNodeTo())
+                    .ruleNodeFrom(ruleTreeNodeLine.getRuleNodeFrom())
+                    .ruleLimitValue(RuleLogicCheckTypeVO.valueOf(ruleTreeNodeLine.getRuleLimitValue()))
+                    .ruleLimitType(RuleLimitTypeVO.valueOf(ruleTreeNodeLine.getRuleLimitType()))
+                    .build();
+            List<RuleTreeNodeLineVO> ruleTreeNodeLineVOS = map.computeIfAbsent(ruleTreeNodeLine.getRuleNodeFrom(), k -> new ArrayList<>());
+            ruleTreeNodeLineVOS.add(ruleTreeNodeLineVO);
+        }
+        List<RuleTreeNode> ruleTreeNodes = ruleTreeNodeDao.queryRuleTreeNodeListByTreeId(treeId);
+        Map<String,RuleTreeNodeVO> ruleTreeNodeVOMap = new HashMap<>();
+        for (RuleTreeNode ruleTreeNode : ruleTreeNodes) {
+            RuleTreeNodeVO ruleTreeNodeVO = RuleTreeNodeVO.builder()
+                    .ruleKey(ruleTreeNode.getRuleKey())
+                    .treeId(ruleTreeNode.getTreeId())
+                    .ruleDesc(ruleTreeNode.getRuleDesc())
+                    .ruleValue(ruleTreeNode.getRuleValue())
+                    .treeNodeLineVOList(map.get(ruleTreeNode.getRuleKey()))
+                    .build();
+            ruleTreeNodeVOMap.put(ruleTreeNode.getRuleKey(), ruleTreeNodeVO);
+        }
+        RuleTreeVO ruleTreeVO = RuleTreeVO.builder()
+                .treeDesc(ruleTree.getTreeDesc())
+                .treeId(ruleTree.getTreeId())
+                .treeRootRuleNode(ruleTree.getTreeRootRuleKey())
+                .treeNodeMap(ruleTreeNodeVOMap)
+                .treeName(ruleTree.getTreeName())
+                .build();
+        redissonService.setValue(cacheKey, ruleTreeVO);
+        return ruleTreeVO;
+
     }
 }
