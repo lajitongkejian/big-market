@@ -4,6 +4,7 @@ import cn.nju.edu.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyRuleEntity;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
+import cn.nju.edu.types.common.Constants;
 import cn.nju.edu.types.enums.ResponseCode;
 import cn.nju.edu.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +81,14 @@ public class StrategyArmory implements IStrategyArmory,IStrategyDispatch {
         //先装配无抽奖规则限制的的奖品策略
         List<StrategyAwardEntity> strategyAwardEntities = strategyRepository.queryStrategyAwardList(strategyId);
         assembleLotteryStrategy2(strategyId.toString(),strategyAwardEntities);
+        //装配奖品及其对应库存
+        for (StrategyAwardEntity strategyAwardEntity : strategyAwardEntities) {
+            Integer awardId = strategyAwardEntity.getAwardId();
+            Integer awardCount = strategyAwardEntity.getAwardCountSurplus();
+            cacheStrategyAwardCount(strategyId,awardId,awardCount);
+        }
+
+
 
         StrategyEntity strategyEntity = strategyRepository.queryStrategyByStrategyId(strategyId);
         String ruleWeight = strategyEntity.getRuleWeight();
@@ -103,10 +112,15 @@ public class StrategyArmory implements IStrategyArmory,IStrategyDispatch {
         return true;
     }
 
+    private void cacheStrategyAwardCount(Long strategyId, Integer awardId, Integer awardCount) {
+        //缓存奖品及其库存数量
+        String key = Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY + strategyId + "_" + awardId;
+        strategyRepository.cacheStrategyAwardCount(key,awardCount);
+
+    }
+
     public void assembleLotteryStrategy2(String key,List<StrategyAwardEntity> strategyAwardEntities){
         //alias算法重构
-//        List<StrategyAwardEntity> strategyAwardEntities = strategyRepository.queryStrategyAwardList(strategyId);
-        //可以加一个判断，redis里要是存在就不用再算了
         int size = strategyAwardEntities.size();
         BigDecimal totalProb = BigDecimal.ZERO;
         //2.初始化概率放缩后的列表、大于1的large以及小于1的small奖品表
@@ -194,5 +208,13 @@ public class StrategyArmory implements IStrategyArmory,IStrategyDispatch {
             return alias.get(index) == -1 ? strategyAwardEntities.get(awards.get(index)).getAwardId() :
                     strategyAwardEntities.get(alias.get(index)).getAwardId();
         }
+    }
+    //库存扣减
+
+
+    @Override
+    public Boolean subtractionAwardStock(Long strategyId, Integer awardId) {
+        String key = Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY + strategyId + "_" + awardId;
+        return strategyRepository.subtractionAwardStock(key);
     }
 }

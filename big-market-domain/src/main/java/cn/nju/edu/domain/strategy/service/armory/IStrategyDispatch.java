@@ -15,4 +15,7 @@ public interface IStrategyDispatch {
     Integer getRandomAwardId2(Long strategyId,String ruleWeightValue);
     //无过滤规则
     Integer getRandomAwardId2(Long strategyId);
+    //库存扣减方法
+    Boolean subtractionAwardStock(Long strategyId,Integer awardId);
+
 }

@@ -7,6 +7,7 @@ import cn.nju.edu.domain.strategy.service.armory.IStrategyArmory;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
 import cn.nju.edu.domain.strategy.service.rule.chain.impl.RuleWeightLogicChain;
 import cn.nju.edu.domain.strategy.service.rule.filter.impl.RuleLockLogicFilter;
+import cn.nju.edu.domain.strategy.service.rule.tree.impl.RuleLuckAwardLogicTreeNode;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.annotation.Resource;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * 项目名称：big-market
@@ -47,12 +49,15 @@ public class RaffleStrategyTest {
     @Resource
     private RuleLockLogicFilter ruleLockLogicFilter;
 
+    @Resource
+    private RuleLuckAwardLogicTreeNode ruleLuckAwardLogicTreeNode;
+
     @Before
     public void test_setUp(){
 //        strategyArmony.assembleLotteryStrategy(100001L);
         ReflectionTestUtils.setField(ruleWeightLogicChain,"userPoints",4900L);
         ReflectionTestUtils.setField(ruleLockLogicFilter,"userRaffleCount",10L);
-        strategyArmory.assembleLotteryStrategy2(100001L);
+//        strategyArmory.assembleLotteryStrategy2(100001L);
 //        strategyArmory.assembleLotteryStrategy2(100002L);
 //        strategyArmory.assembleLotteryStrategy2(100003L);
         strategyArmory.assembleLotteryStrategy2(100006L);
@@ -102,7 +107,7 @@ public class RaffleStrategyTest {
     }
 
     @Test
-    public void test_performRaffle4(){
+    public void test_performRaffle4() throws InterruptedException {
         RaffleFactorEntity raffleFactorEntity = RaffleFactorEntity.builder()
                 .strategyId(100006L)
                 .userId("abc")
@@ -111,7 +116,7 @@ public class RaffleStrategyTest {
         RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(raffleFactorEntity);
         log.info("测试参数：{}", JSON.toJSONString(raffleFactorEntity));
         log.info("测试结果：{}", JSON.toJSONString(raffleAwardEntity));
-
+        new CountDownLatch(1).await();
     }
 
 }

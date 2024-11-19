@@ -5,6 +5,7 @@ import cn.nju.edu.domain.strategy.model.entity.StrategyEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyRuleEntity;
 import cn.nju.edu.domain.strategy.model.vo.RuleTreeVO;
 import cn.nju.edu.domain.strategy.model.vo.StrategyAwardRuleModelVO;
+import cn.nju.edu.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -53,4 +54,14 @@ public interface IStrategyRepository {
     StrategyAwardRuleModelVO queryStrategyAwardRuleModel(Integer awardId, Long strategyId);
 
     RuleTreeVO queryRuleTreeVOByTreeId(String treeId);
+
+    void cacheStrategyAwardCount(String key, Integer awardCount);
+
+    Boolean subtractionAwardStock(String key);
+
+    void awardStockConsumeSendQueue(StrategyAwardStockKeyVO build);
+
+    StrategyAwardStockKeyVO takeQueueValue();
+
+    void updateStrategyAwardStock(Long strategyId, Integer awardId);
 }

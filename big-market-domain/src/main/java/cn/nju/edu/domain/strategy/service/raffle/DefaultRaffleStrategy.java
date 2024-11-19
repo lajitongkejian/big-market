@@ -1,10 +1,11 @@
-package cn.nju.edu.domain.strategy.service;
+package cn.nju.edu.domain.strategy.service.raffle;
 
 import cn.nju.edu.domain.strategy.model.vo.RuleTreeVO;
 import cn.nju.edu.domain.strategy.model.vo.StrategyAwardRuleModelVO;
+import cn.nju.edu.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
+import cn.nju.edu.domain.strategy.service.AbstractRaffleStrategy;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
-import cn.nju.edu.domain.strategy.service.raffle.AbstractRaffleStrategy;
 import cn.nju.edu.domain.strategy.service.rule.chain.ILogicChain;
 import cn.nju.edu.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import cn.nju.edu.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
@@ -50,4 +51,13 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
         return engine.process(userId, strategyId, awardId);
     }
 
+    @Override
+    public StrategyAwardStockKeyVO takeQueueValue() throws InterruptedException {
+        return strategyRepository.takeQueueValue();
+    }
+
+    @Override
+    public void updateStrategyAwardStock(Long strategyId, Integer awardId) {
+        strategyRepository.updateStrategyAwardStock(strategyId, awardId);
+    }
 }

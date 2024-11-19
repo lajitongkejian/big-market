@@ -11,10 +11,15 @@ public class Constants {
         public static String STRATEGY_RATE_TABLE_KEY = "big_market_strategy_rate_table_key_";
         public static String STRATEGY_RATE_RANGE_KEY = "big_market_strategy_rate_range_key_";
         public static String STRATEGY_KEY = "big_market_strategy_key_";
+        public static String STRATEGY_AWARD_COUNT_KEY = "big_market_strategy_award_count_key_";
+
         //alias算法重构键
         public static String STRATEGY_LOTTERY_AWARDS_KEY = "big_market_strategy_lottery_awards_key_";
         public static String STRATEGY_LOTTERY_ALIAS_KEY = "big_market_strategy_lottery_alias_key_";
         public static String STRATEGY_LOTTERY_SCALEDRATE_KEY = "big_market_strategy_lottery_scaledrate_key_";
+
+        //redis消息队列前缀
+        public static String STRATEGY_AWARD_COUNT_QUEUE_KEY = "big_market_strategy_award_count_queue_key_";
 
         //决策树redis前缀
         public static String RULE_TREE_VO_KEY = "rule_tree_vo_key_";

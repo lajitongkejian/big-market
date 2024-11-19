@@ -9,6 +9,9 @@ import cn.nju.edu.infrastructure.persistent.dao.*;
 import cn.nju.edu.infrastructure.persistent.po.*;
 import cn.nju.edu.infrastructure.persistent.redis.RedissonService;
 import cn.nju.edu.types.common.Constants;
+import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RBlockingQueue;
+import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Repository;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 项目名称：big-market
@@ -26,6 +30,7 @@ import java.util.*;
  * 描述：策略仓储实现类,负责内存与硬盘存储判断、po转dto操作
  */
 @Repository
+@Slf4j
 public class StrategyRepository implements IStrategyRepository{
 
 
@@ -240,5 +245,56 @@ public class StrategyRepository implements IStrategyRepository{
         redissonService.setValue(cacheKey, ruleTreeVO);
         return ruleTreeVO;
 
+    }
+
+    @Override
+    public void cacheStrategyAwardCount(String key, Integer awardCount) {
+        if(redissonService.isExists(key)) return;
+        redissonService.setAtomicLong(key,awardCount);
+
+    }
+
+    @Override
+    public Boolean subtractionAwardStock(String key) {
+        long surplus = redissonService.decr(key);
+        if(surplus < 0){
+            redissonService.setValue(key,0);
+            return false;
+        }
+        String lockKey = key+"_"+surplus;
+        Boolean lock = redissonService.setNx(lockKey);
+        if(!lock){
+            log.info("策略奖品库存加锁失败",lockKey);
+        }
+        return lock;
+
+    }
+
+    @Override
+    public void awardStockConsumeSendQueue(StrategyAwardStockKeyVO build) {
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_QUEUE_KEY;
+        //创建阻塞消息队列信息
+        RBlockingQueue<StrategyAwardStockKeyVO> blockingQueue = redissonService.getBlockingQueue(cacheKey);
+        //根据队列信息创建延迟队列
+        RDelayedQueue<StrategyAwardStockKeyVO> delayedQueue = redissonService.getDelayedQueue(blockingQueue);
+        //将库存扣减对象加入到延迟队列
+        delayedQueue.offer(build,3, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public StrategyAwardStockKeyVO takeQueueValue() {
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_QUEUE_KEY;
+        RBlockingQueue<StrategyAwardStockKeyVO> blockingQueue = redissonService.getBlockingQueue(cacheKey);
+        return blockingQueue.poll();
+
+    }
+
+    @Override
+    public void updateStrategyAwardStock(Long strategyId, Integer awardId) {
+        StrategyAward strategyAward = StrategyAward.builder()
+                .strategyId(strategyId)
+                .awardId(awardId)
+                .build();
+        strategyAwardDao.updateStrategyAwardStock(strategyAward);
     }
 }

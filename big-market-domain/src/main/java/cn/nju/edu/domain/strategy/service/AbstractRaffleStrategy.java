@@ -1,17 +1,10 @@
-package cn.nju.edu.domain.strategy.service.raffle;
+package cn.nju.edu.domain.strategy.service;
 
 import cn.nju.edu.domain.strategy.model.entity.RaffleAwardEntity;
 import cn.nju.edu.domain.strategy.model.entity.RaffleFactorEntity;
-import cn.nju.edu.domain.strategy.model.entity.RuleActionEntity;
-import cn.nju.edu.domain.strategy.model.entity.StrategyEntity;
-import cn.nju.edu.domain.strategy.model.vo.RuleLogicCheckTypeVO;
-import cn.nju.edu.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
-import cn.nju.edu.domain.strategy.service.IRaffleStrategy;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
-import cn.nju.edu.domain.strategy.service.rule.chain.ILogicChain;
 import cn.nju.edu.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
-import cn.nju.edu.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
 import cn.nju.edu.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
 import cn.nju.edu.types.enums.ResponseCode;
 import cn.nju.edu.types.exception.AppException;
@@ -25,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  * 描述：
  */
 @Slf4j
-public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
+public abstract class AbstractRaffleStrategy implements IRaffleStrategy, IRaffleStock {
 
 
     protected IStrategyRepository strategyRepository;
@@ -67,30 +60,6 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
                 .strategyId(strategyId)
                 .awardConfig(treeStrategyAwardVO.getAwardRuleValue())
                 .build();
-
-
-
-
-
-
-
-//        String[] proceedModels = ruleModels.splitProceedRuleModels();
-//        RuleActionEntity<RuleActionEntity.RaffleProceedEntity> raffleProceedEntity= doCheckLogicProceedRaffle(RaffleFactorEntity.builder()
-//                .strategyId(strategyId)
-//                .awardId(awardId)
-//                .userId(userId)
-//                .build(), proceedModels);
-//
-//        if(RuleLogicCheckTypeVO.TAKE_OVER.getCode().equals(raffleProceedEntity.getCode())){
-//            log.info("中奖中规则拦截，通过抽奖后规则rule_award_lucky走保底奖励");
-//            return RaffleAwardEntity.builder()
-//                    .awardDesc("中奖中规则拦截，通过抽奖后规则rule_award_lucky走保底奖励")
-//                    .build();
-//        }
-//        return RaffleAwardEntity.builder()
-//                .awardId(awardId)
-//                .build();
-
     }
 
     /**
@@ -111,9 +80,6 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
      * @return 过滤结果【奖品ID，会根据抽奖次数判断、库存判断、兜底兜里返回最终的可获得奖品信息】
      */
     public abstract DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Long strategyId, Integer awardId);
-
-
-
 
 
 }
