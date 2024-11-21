@@ -1,17 +1,23 @@
 package cn.nju.edu.domain.strategy.service.raffle;
 
+import cn.nju.edu.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.nju.edu.domain.strategy.model.vo.RuleTreeVO;
 import cn.nju.edu.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 import cn.nju.edu.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
 import cn.nju.edu.domain.strategy.service.AbstractRaffleStrategy;
+import cn.nju.edu.domain.strategy.service.IRaffleStock;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
+import cn.nju.edu.domain.strategy.service.rule.IRaffleAward;
 import cn.nju.edu.domain.strategy.service.rule.chain.ILogicChain;
 import cn.nju.edu.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import cn.nju.edu.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
 import cn.nju.edu.domain.strategy.service.rule.tree.factory.engine.IDecisionTreeEngine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 项目名称：big-market
@@ -22,7 +28,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
+public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRaffleAward, IRaffleStock {
 
     public DefaultRaffleStrategy(DefaultChainFactory chainFactory, DefaultTreeFactory treeFactory, IStrategyDispatch strategyDispatch, IStrategyRepository strategyRepository) {
         super(chainFactory, treeFactory, strategyDispatch, strategyRepository);
@@ -59,5 +65,10 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
     @Override
     public void updateStrategyAwardStock(Long strategyId, Integer awardId) {
         strategyRepository.updateStrategyAwardStock(strategyId, awardId);
+    }
+
+    @Override
+    public List<StrategyAwardEntity> queryStrategyAwardByStrategyId(Long strategyId) {
+        return strategyRepository.queryStrategyAwardList(strategyId);
     }
 }

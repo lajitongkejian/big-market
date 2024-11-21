@@ -56,12 +56,15 @@ public class StrategyRepository implements IStrategyRepository{
     private IRuleTreeNodeLineDao ruleTreeNodeLineDao;
 
 
-
-
+    /**
+     * 根据策略id查询全部奖品信息
+     * @param strategyId
+     * @return
+     */
     @Override
     public List<StrategyAwardEntity> queryStrategyAwardList(Long strategyId) {
         //拼接key，一个抽奖页面对应一个奖品列表，先从redis中获取
-        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_KEY + strategyId;
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_LIST_KEY + strategyId;
         List<StrategyAwardEntity> strategyAwardEntities =  redissonService.getValue(cacheKey);
         if(strategyAwardEntities != null && !strategyAwardEntities.isEmpty()) {
             return strategyAwardEntities;
@@ -76,6 +79,9 @@ public class StrategyRepository implements IStrategyRepository{
                           .awardCount(strategyAward.getAwardCount())
                           .awardCountSurplus(strategyAward.getAwardCountSurplus())
                           .awardRate(strategyAward.getAwardRate())
+                          .awardSubtitle(strategyAward.getAwardSubtitle())
+                          .sort(strategyAward.getSort())
+                          .awardTitle(strategyAward.getAwardTitle())
                           .build();
              strategyAwardEntities.add(strategyAwardEntity);
         }
@@ -105,7 +111,7 @@ public class StrategyRepository implements IStrategyRepository{
         String scaledRatesCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_SCALEDRATE_KEY + key;
         String awardsCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_AWARDS_KEY + key;
         String aliasCacheKey = Constants.RedisKey.STRATEGY_LOTTERY_ALIAS_KEY + key;
-        String awardsCacheKey2 = Constants.RedisKey.STRATEGY_AWARD_KEY+ key;
+        String awardsCacheKey2 = Constants.RedisKey.STRATEGY_AWARD_LIST_KEY+ key;
         redissonService.setValue(scaledRatesCacheKey, scaledAwardRates);
         redissonService.setValue(awardsCacheKey, awards);
         redissonService.setValue(aliasCacheKey, alias);
@@ -296,5 +302,29 @@ public class StrategyRepository implements IStrategyRepository{
                 .awardId(awardId)
                 .build();
         strategyAwardDao.updateStrategyAwardStock(strategyAward);
+    }
+
+    @Override
+    public StrategyAwardEntity queryStrategyAwardEntity(Long strategyId, Integer awardId) {
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_KEY +strategyId+"_"+awardId;
+        StrategyAwardEntity strategyAwardEntity = redissonService.getValue(cacheKey);
+        if(null!=strategyAwardEntity){ return strategyAwardEntity; }
+        StrategyAward strategyAward = StrategyAward.builder()
+                .strategyId(strategyId)
+                .awardId(awardId)
+                .build();
+        StrategyAward strategyAwardRes = strategyAwardDao.queryStrategyAward(strategyAward);
+        strategyAwardEntity = StrategyAwardEntity.builder()
+                  .strategyId(strategyAwardRes.getStrategyId())
+                  .awardId(strategyAwardRes.getAwardId())
+                  .awardCount(strategyAwardRes.getAwardCount())
+                  .awardCountSurplus(strategyAwardRes.getAwardCountSurplus())
+                  .awardRate(strategyAwardRes.getAwardRate())
+                  .sort(strategyAwardRes.getSort())
+                  .awardTitle(strategyAwardRes.getAwardTitle())
+                  .awardSubtitle(strategyAwardRes.getAwardSubtitle())
+                  .build();
+        redissonService.setValue(cacheKey, strategyAwardEntity);
+        return strategyAwardEntity;
     }
 }

@@ -2,6 +2,7 @@ package cn.nju.edu.domain.strategy.service;
 
 import cn.nju.edu.domain.strategy.model.entity.RaffleAwardEntity;
 import cn.nju.edu.domain.strategy.model.entity.RaffleFactorEntity;
+import cn.nju.edu.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
 import cn.nju.edu.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
@@ -18,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
  * 描述：
  */
 @Slf4j
-public abstract class AbstractRaffleStrategy implements IRaffleStrategy, IRaffleStock {
+public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
 
 
     protected IStrategyRepository strategyRepository;
@@ -48,17 +49,22 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy, IRaffle
         DefaultChainFactory.StrategyAwardVO strategyAwardVO = raffleLogicChain(userId,strategyId);
         log.info("抽奖策略计算：责任链{} {} {} {}",userId,strategyId,strategyAwardVO.getAwardId(),strategyAwardVO.getLogicModel());
         if(!DefaultChainFactory.LogicModel.RULE_DEFAULT.getCode().equals(strategyAwardVO.getLogicModel())){
-            return RaffleAwardEntity.builder()
-                    .awardId(strategyAwardVO.getAwardId())
-                    .build();
+            return buildRaffleAwardEntity(strategyAwardVO.getAwardId(),strategyId,null);
         }
         //3、规则树过滤抽奖
         DefaultTreeFactory.StrategyAwardVO treeStrategyAwardVO = raffleLogicTree(userId,strategyId,strategyAwardVO.getAwardId());
         log.info("抽奖策略计算：规则树{} {} {} {}",userId,strategyId,treeStrategyAwardVO.getAwardId(),treeStrategyAwardVO.getAwardRuleValue());
+
+
+        return buildRaffleAwardEntity(strategyAwardVO.getAwardId(),strategyId,treeStrategyAwardVO.getAwardRuleValue());
+    }
+
+    private RaffleAwardEntity buildRaffleAwardEntity(Integer awardId,Long strategyId,String awardConfig){
+        StrategyAwardEntity strategyAwardEntity = strategyRepository.queryStrategyAwardEntity(strategyId,awardId);
         return RaffleAwardEntity.builder()
-                .awardId(treeStrategyAwardVO.getAwardId())
-                .strategyId(strategyId)
-                .awardConfig(treeStrategyAwardVO.getAwardRuleValue())
+                .awardId(awardId)
+                .awardConfig(awardConfig)
+                .sort(strategyAwardEntity.getSort())
                 .build();
     }
 

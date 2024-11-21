@@ -1,5 +1,6 @@
 package cn.nju.edu.infrastructure.persistent.dao;
 
+import cn.nju.edu.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.nju.edu.infrastructure.persistent.po.Award;
 import cn.nju.edu.infrastructure.persistent.po.StrategyAward;
 import cn.nju.edu.infrastructure.persistent.po.StrategyRule;
@@ -23,4 +24,6 @@ public interface IStrategyAwardDao {
     List<StrategyAward> queryStrategyAwardListByStrategyId(Long strategyId);
 
     String queryStrategyAwardRule(StrategyRule build);
+
+    StrategyAward queryStrategyAward(StrategyAward strategyAward);
 }
