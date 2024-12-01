@@ -86,6 +86,10 @@
             <artifactId>converter-gson</artifactId>
             <version>2.9.0</version>
         </dependency>
+        <dependency>
+            <groupId>cn.bugstack.middleware</groupId>
+            <artifactId>db-router-spring-boot-starter</artifactId>
+        </dependency>
 
         <!-- 工程模块；启动依赖 trigger->domain, infrastructure-->
         <dependency>
@@ -95,6 +99,10 @@
         <dependency>
             <groupId>cn.nju.edu</groupId>
             <artifactId>big-market-infrastructure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jeasy</groupId>
+            <artifactId>easy-random-core</artifactId>
         </dependency>
     </dependencies>
 

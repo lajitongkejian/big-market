@@ -1,8 +1,7 @@
-package cn.nju.edu.test.infrastructure;
+package cn.nju.edu.test.infrastructure.strategy;
 
 import cn.nju.edu.domain.strategy.model.vo.RuleTreeVO;
 import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
-import cn.nju.edu.infrastructure.persistent.repository.StrategyRepository;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;

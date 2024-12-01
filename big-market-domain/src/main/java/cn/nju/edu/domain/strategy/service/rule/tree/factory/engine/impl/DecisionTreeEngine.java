@@ -42,7 +42,7 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
         Map<String , RuleTreeNodeVO> treeNodeMap = ruleTreeVO.getTreeNodeMap();
         //获取根节点
         RuleTreeNodeVO ruleTreeNode = treeNodeMap.get(nextNode);
-        //遍历根节点
+        //遍历根节点所存储的连线
         while(null != ruleTreeNode) {
             ILogicTreeNode logicTreeNode = logicTreeNodeGroup.get(ruleTreeNode.getRuleKey());
             String ruleValue = ruleTreeNode.getRuleValue();

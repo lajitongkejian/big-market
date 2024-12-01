@@ -1,4 +1,4 @@
-package cn.nju.edu.test.infrastructure;
+package cn.nju.edu.test.infrastructure.strategy;
 
 import cn.nju.edu.infrastructure.persistent.dao.IAwardDao;
 import cn.nju.edu.infrastructure.persistent.po.Award;

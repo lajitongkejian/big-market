@@ -206,6 +206,7 @@ public class StrategyRepository implements IStrategyRepository{
         return queryStrategyRuleValue(strategyId, null, ruleModel);
     }
 
+    //构建规则树的map映射，并封装为RuleTreeVO
     @Override
     public RuleTreeVO queryRuleTreeVOByTreeId(String treeId) {
         //优先从缓存中拿数据

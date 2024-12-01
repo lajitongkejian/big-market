@@ -1,1 +1,1 @@
-docker stop big-market
+docker stop big-market-app

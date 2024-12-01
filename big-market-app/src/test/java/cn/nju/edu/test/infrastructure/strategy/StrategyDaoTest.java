@@ -1,8 +1,6 @@
-package cn.nju.edu.test.infrastructure;
+package cn.nju.edu.test.infrastructure.strategy;
 
-import cn.nju.edu.infrastructure.persistent.dao.IAwardDao;
 import cn.nju.edu.infrastructure.persistent.dao.IStrategyDao;
-import cn.nju.edu.infrastructure.persistent.po.Award;
 import cn.nju.edu.infrastructure.persistent.po.Strategy;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;

@@ -25,6 +25,7 @@ public class DefaultLogicChain extends AbstractLogicChain {
 
     @Override
     public DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId) {
+        //如果rulemodel为空，则走幸运保底，或者不为空前面一直放行，也是走幸运保底
         Integer awardId =  strategyDispatch.getRandomAwardId2(strategyId);
         log.info("抽奖责任链-幸运保底过滤 userId:{}, strategyId:{} ,ruleModel:{} ,awardId:{}", userId, strategyId, ruleModel(),awardId);
         return DefaultChainFactory.StrategyAwardVO.builder()

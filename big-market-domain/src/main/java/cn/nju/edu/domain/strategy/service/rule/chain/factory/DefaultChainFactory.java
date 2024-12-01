@@ -28,13 +28,14 @@ public class DefaultChainFactory {
         this.strategyRepository = strategyRepository;
     }
 
+    //返回抽奖策略责任链的头节点，如果该策略的rule_models为空，说明该抽奖策略无前置规则，只需走默认的抽奖责任链即可
     public ILogicChain openLogicChain(Long strategyId) {
         StrategyEntity strategyEntity = strategyRepository.queryStrategyByStrategyId(strategyId);
         String[] ruleModels = strategyEntity.getRuleModels();
         if(null == ruleModels || ruleModels.length == 0) {
             return logicChainGroup.get("default");
         }
-
+        //构筑责任链
         ILogicChain logicChain = logicChainGroup.get(ruleModels[0]);
         ILogicChain logicChainHead = logicChain;
         for(int i = 1; i < ruleModels.length; i++) {

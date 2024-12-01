@@ -27,6 +27,12 @@ public class Constants {
 
         //rule_models分隔符
         public static String SPLIT = ",";
+
+        //Activity键
+        public static String ACTIVITY_KEY = "big_market_activity_key_";
+        public static String ACTIVITY_SKU_KEY = "big_market_activity_sku_key_";
+        public static String ACTIVITY_COUNT_KEY = "big_market_activity_count_key_";
+
     }
 
 
