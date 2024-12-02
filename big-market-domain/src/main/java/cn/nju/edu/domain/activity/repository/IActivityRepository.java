@@ -1,5 +1,6 @@
 package cn.nju.edu.domain.activity.repository;
 
+import cn.nju.edu.domain.activity.model.aggregate.CreateOrderAggregate;
 import cn.nju.edu.domain.activity.model.entity.ActivityCountEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivityEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivitySkuEntity;
@@ -21,4 +22,5 @@ public interface IActivityRepository {
 
     ActivityCountEntity queryRaffleActivityCountByActivityCountId(Long activityCountId);
 
+    void doSaveOrder(CreateOrderAggregate createOrderAggregate);
 }

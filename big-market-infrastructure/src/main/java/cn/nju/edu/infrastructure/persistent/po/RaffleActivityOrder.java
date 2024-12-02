@@ -79,4 +79,14 @@ public class RaffleActivityOrder {
      */
     private Date updateTime;
 
+    /**
+     * 业务防重ID
+     */
+    private String outBusinessNo;
+
+    /**
+     * 商品sku
+     */
+    private Long sku;
+
 }

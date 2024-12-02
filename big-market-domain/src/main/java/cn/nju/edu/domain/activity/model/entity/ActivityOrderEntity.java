@@ -71,4 +71,13 @@ public class ActivityOrderEntity {
      */
     private OrderStateVO state;
 
+    /**
+     * 业务防重ID
+     */
+    private String outBusinessNo;
+
+    /**
+     * 商品sku
+     */
+    private Long sku;
 }
