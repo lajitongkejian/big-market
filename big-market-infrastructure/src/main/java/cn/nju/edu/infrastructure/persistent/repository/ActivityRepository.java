@@ -1,13 +1,16 @@
 package cn.nju.edu.infrastructure.persistent.repository;
 
 import cn.bugstack.middleware.db.router.strategy.IDBRouterStrategy;
+import cn.nju.edu.domain.activity.event.ActivitySkuStockZeroMessageEvent;
 import cn.nju.edu.domain.activity.model.aggregate.CreateOrderAggregate;
 import cn.nju.edu.domain.activity.model.entity.ActivityCountEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivityEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivityOrderEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivitySkuEntity;
+import cn.nju.edu.domain.activity.model.vo.ActivitySkuStockKeyVO;
 import cn.nju.edu.domain.activity.model.vo.ActivityStateVO;
 import cn.nju.edu.domain.activity.repository.IActivityRepository;
+import cn.nju.edu.infrastructure.event.EventPublisher;
 import cn.nju.edu.infrastructure.persistent.dao.*;
 import cn.nju.edu.infrastructure.persistent.po.*;
 import cn.nju.edu.infrastructure.persistent.redis.IRedisService;
@@ -16,11 +19,15 @@ import cn.nju.edu.types.common.Constants;
 import cn.nju.edu.types.enums.ResponseCode;
 import cn.nju.edu.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RBlockingQueue;
+import org.redisson.api.RDelayedQueue;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 项目名称：big-market
@@ -49,7 +56,10 @@ public class ActivityRepository implements IActivityRepository {
     private IRaffleActivityOrderDao raffleActivityOrderDao;
     @Resource
     private IRaffleActivityAccountDao raffleActivityAccountDao;
-
+    @Resource
+    private EventPublisher eventPublisher;
+    @Resource
+    ActivitySkuStockZeroMessageEvent activitySkuStockZeroMessageEvent;
 
 
 
@@ -160,11 +170,65 @@ public class ActivityRepository implements IActivityRepository {
             routerStrategy.clear();
         }
 
+    }
 
+    @Override
+    public void cacheActivitySkuStockCount(String cacheKey, Integer stockCount) {
+        if(redisService.isExists(cacheKey)) return;
+        redisService.setAtomicLong(cacheKey, stockCount);
+    }
 
+    @Override
+    public boolean subtractActivitySkuStock(Long sku, String cacheKey, Date endDateTime) {
+        long surplus = redisService.decr(cacheKey);
+        if(surplus == 0){
+            //发送mq消息,通知库存为零，更新数据库,每次发的消息都是固定的
+            eventPublisher.publish(activitySkuStockZeroMessageEvent.topic(),activitySkuStockZeroMessageEvent.buildEventMessage(sku));
+            return false;
+        }else if(surplus < 0){
+            redisService.setAtomicLong(cacheKey,0);
+            return false;
+        }
+        String lockKey = cacheKey + "_" + surplus;
+        long expireMillis = endDateTime.getTime() - System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1);
+        Boolean lock = redisService.setNx(lockKey, expireMillis, TimeUnit.MILLISECONDS);
+        if (!lock) {
+            log.info("活动sku库存加锁失败 {}", lockKey);
+        }
+        return lock;
 
+    }
 
+    @Override
+    public void activitySkuStockConsumeSendQueue(ActivitySkuStockKeyVO build) {
+        String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUERY_KEY;
+        RBlockingQueue<ActivitySkuStockKeyVO> blockingQueue = redisService.getBlockingQueue(cacheKey);
+        RDelayedQueue<ActivitySkuStockKeyVO> delayedQueue = redisService.getDelayedQueue(blockingQueue);
+        delayedQueue.offer(build,3,TimeUnit.SECONDS);
+    }
 
+    @Override
+    public ActivitySkuStockKeyVO takeQueueValue() {
+        String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUERY_KEY;
+        RBlockingQueue<ActivitySkuStockKeyVO> blockingQueue = redisService.getBlockingQueue(cacheKey);
+        return blockingQueue.poll();
+    }
 
+    @Override
+    public void clearQueueValue() {
+        String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUERY_KEY;
+        RBlockingQueue<ActivitySkuStockKeyVO> blockingQueue = redisService.getBlockingQueue(cacheKey);
+        RDelayedQueue<ActivitySkuStockKeyVO> delayedQueue = redisService.getDelayedQueue(blockingQueue);
+        delayedQueue.clear();
+    }
+
+    @Override
+    public void updateActivitySkuStock(Long sku) {
+        raffleActivitySkuDao.updateActivitySkuStock(sku);
+    }
+
+    @Override
+    public void clearActivitySkuStock(Long sku) {
+        raffleActivitySkuDao.clearActivitySkuStock(sku);
     }
 }

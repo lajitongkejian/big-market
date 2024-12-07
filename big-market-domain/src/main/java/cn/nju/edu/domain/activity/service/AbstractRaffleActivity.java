@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
  * 描述：定义了发布抽奖次数（模拟商品下单处理）的流程模板
  */
 @Slf4j
-public abstract class AbstractRaffleActivity extends RaffleActivitySupport implements IRaffleOrder {
+public abstract class AbstractRaffleActivity extends RaffleActivitySupport implements IRaffleOrder,ISkuStock {
 
     public AbstractRaffleActivity(IActivityRepository activityRepository, DefaultActivityChainFactory defaultActivityChainFactory) {
         super(activityRepository, defaultActivityChainFactory);

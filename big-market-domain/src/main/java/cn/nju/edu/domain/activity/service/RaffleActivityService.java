@@ -2,6 +2,7 @@ package cn.nju.edu.domain.activity.service;
 
 import cn.nju.edu.domain.activity.model.aggregate.CreateOrderAggregate;
 import cn.nju.edu.domain.activity.model.entity.*;
+import cn.nju.edu.domain.activity.model.vo.ActivitySkuStockKeyVO;
 import cn.nju.edu.domain.activity.model.vo.OrderStateVO;
 import cn.nju.edu.domain.activity.repository.IActivityRepository;
 import cn.nju.edu.domain.activity.service.rule.factory.DefaultActivityChainFactory;
@@ -56,6 +57,26 @@ public class RaffleActivityService extends AbstractRaffleActivity {
     @Override
     protected void doSave(CreateOrderAggregate createOrderAggregate) {
         activityRepository.doSaveOrder(createOrderAggregate);
+    }
+
+    @Override
+    public ActivitySkuStockKeyVO takeQueueValue() throws InterruptedException {
+        return activityRepository.takeQueueValue();
+    }
+
+    @Override
+    public void clearQueueValue() {
+        activityRepository.clearQueueValue();
+    }
+
+    @Override
+    public void updateActivitySkuStock(Long sku) {
+        activityRepository.updateActivitySkuStock(sku);
+    }
+
+    @Override
+    public void clearActivitySkuStock(Long sku) {
+        activityRepository.clearActivitySkuStock(sku);
     }
 }
 

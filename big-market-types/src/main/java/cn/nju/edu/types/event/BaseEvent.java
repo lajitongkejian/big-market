@@ -1,0 +1,34 @@
+package cn.nju.edu.types.event;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
+
+/**
+ * 项目名称：big-market
+ * 类名称：BaseEvent
+ * 作者：tkj
+ * 日期：2024/12/7
+ * 描述：
+ */
+@Data
+public abstract class BaseEvent<T> {
+
+    public abstract EventMessage<T> buildEventMessage(T data);
+
+    public abstract String topic();
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class EventMessage<T> {
+        private String id;
+        private Date timestamp;
+        private T data;
+    }
+
+}
