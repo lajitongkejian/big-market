@@ -1,10 +1,12 @@
-package cn.nju.edu.domain.activity.service;
+package cn.nju.edu.domain.activity.service.quota;
 
-import cn.nju.edu.domain.activity.model.aggregate.CreateOrderAggregate;
+import cn.nju.edu.domain.activity.model.aggregate.CreateQuotaOrderAggregate;
 import cn.nju.edu.domain.activity.model.entity.*;
 import cn.nju.edu.domain.activity.repository.IActivityRepository;
-import cn.nju.edu.domain.activity.service.rule.IActionChain;
-import cn.nju.edu.domain.activity.service.rule.factory.DefaultActivityChainFactory;
+import cn.nju.edu.domain.activity.service.IRaffleActivityAccountQuotaService;
+import cn.nju.edu.domain.activity.service.IRaffleActivitySkuStockService;
+import cn.nju.edu.domain.activity.service.quota.rule.IActionChain;
+import cn.nju.edu.domain.activity.service.quota.rule.factory.DefaultActivityChainFactory;
 import cn.nju.edu.types.enums.ResponseCode;
 import cn.nju.edu.types.exception.AppException;
 import com.alibaba.fastjson.JSON;
@@ -19,9 +21,9 @@ import org.apache.commons.lang3.StringUtils;
  * 描述：定义了发布抽奖次数（模拟商品下单处理）的流程模板
  */
 @Slf4j
-public abstract class AbstractRaffleActivity extends RaffleActivitySupport implements IRaffleOrder,ISkuStock {
+public abstract class AbstractRaffleActivityAccountQuota extends RaffleActivityAccountQuotaSupport implements IRaffleActivityAccountQuotaService, IRaffleActivitySkuStockService {
 
-    public AbstractRaffleActivity(IActivityRepository activityRepository, DefaultActivityChainFactory defaultActivityChainFactory) {
+    public AbstractRaffleActivityAccountQuota(IActivityRepository activityRepository, DefaultActivityChainFactory defaultActivityChainFactory) {
         super(activityRepository, defaultActivityChainFactory);
     }
 
@@ -57,17 +59,17 @@ public abstract class AbstractRaffleActivity extends RaffleActivitySupport imple
         boolean success = actionChain.action(activityCountEntity,activitySkuEntity,activityEntity);
         //这里暂时先不对success做判断处理
         //4.生成订单聚合类
-        CreateOrderAggregate createOrderAggregate = buildOrderAggregate(skuRechargeEntity,activityCountEntity,activitySkuEntity,activityEntity);
+        CreateQuotaOrderAggregate createOrderAggregate = buildOrderAggregate(skuRechargeEntity,activityCountEntity,activitySkuEntity,activityEntity);
         //5.保存订单
         doSave(createOrderAggregate);
         //6.返回单号
         return createOrderAggregate.getActivityOrderEntity().getOrderId();
     }
 
-    protected abstract void doSave(CreateOrderAggregate createOrderAggregate);
+    protected abstract void doSave(CreateQuotaOrderAggregate createOrderAggregate);
 
 
-    protected abstract CreateOrderAggregate buildOrderAggregate(SkuRechargeEntity skuRechargeEntity, ActivityCountEntity activityCountEntity, ActivitySkuEntity activitySkuEntity, ActivityEntity activityEntity);
+    protected abstract CreateQuotaOrderAggregate buildOrderAggregate(SkuRechargeEntity skuRechargeEntity, ActivityCountEntity activityCountEntity, ActivitySkuEntity activitySkuEntity, ActivityEntity activityEntity);
 
 
 }

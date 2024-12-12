@@ -1,10 +1,10 @@
-package cn.nju.edu.domain.activity.service.rule.impl;
+package cn.nju.edu.domain.activity.service.quota.rule.impl;
 
 import cn.nju.edu.domain.activity.model.entity.ActivityCountEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivityEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivitySkuEntity;
 import cn.nju.edu.domain.activity.model.vo.ActivityStateVO;
-import cn.nju.edu.domain.activity.service.rule.AbstractActionChain;
+import cn.nju.edu.domain.activity.service.quota.rule.AbstractActionChain;
 import cn.nju.edu.types.enums.ResponseCode;
 import cn.nju.edu.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class ActivityBaseActionChain extends AbstractActionChain {
         if(activitySkuEntity.getStockCountSurplus() <=0){
             throw new AppException(ResponseCode.ACTIVITY_SKU_STOCK_ERROR.getCode(),ResponseCode.ACTIVITY_SKU_STOCK_ERROR.getInfo());
         }
-        return next().action( activityCountEntity,activitySkuEntity, activityEntity);
+        return next().action(activityCountEntity,activitySkuEntity, activityEntity);
     }
 }
 

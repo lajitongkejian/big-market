@@ -3,7 +3,7 @@ package cn.nju.edu.test.infrastructure.activity;
 import cn.nju.edu.domain.activity.model.entity.ActivityOrderEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivityShopCartEntity;
 import cn.nju.edu.domain.activity.model.entity.SkuRechargeEntity;
-import cn.nju.edu.domain.activity.service.IRaffleOrder;
+import cn.nju.edu.domain.activity.service.IRaffleActivityAccountQuotaService;
 import cn.nju.edu.domain.activity.service.armory.IActivityArmory;
 import cn.nju.edu.types.exception.AppException;
 import com.alibaba.fastjson.JSON;
@@ -31,7 +31,7 @@ import java.util.concurrent.CountDownLatch;
 public class RaffleOrderTest {
 
     @Resource
-    private IRaffleOrder raffleOrder;
+    private IRaffleActivityAccountQuotaService raffleOrder;
 
     @Resource
     private IActivityArmory activityArmory;

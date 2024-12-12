@@ -1,10 +1,10 @@
-package cn.nju.edu.domain.activity.service;
+package cn.nju.edu.domain.activity.service.quota;
 
 import cn.nju.edu.domain.activity.model.entity.ActivityCountEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivityEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivitySkuEntity;
 import cn.nju.edu.domain.activity.repository.IActivityRepository;
-import cn.nju.edu.domain.activity.service.rule.factory.DefaultActivityChainFactory;
+import cn.nju.edu.domain.activity.service.quota.rule.factory.DefaultActivityChainFactory;
 
 /**
  * 项目名称：big-market
@@ -13,13 +13,13 @@ import cn.nju.edu.domain.activity.service.rule.factory.DefaultActivityChainFacto
  * 日期：2024/12/2
  * 描述：抽奖活动支撑类，用于提供基础信息查询操作
  */
-public class RaffleActivitySupport {
+public class RaffleActivityAccountQuotaSupport {
 
     protected DefaultActivityChainFactory defaultActivityChainFactory;
 
     protected IActivityRepository activityRepository;
 
-    public RaffleActivitySupport(IActivityRepository activityRepository,DefaultActivityChainFactory defaultActivityChainFactory) {
+    public RaffleActivityAccountQuotaSupport(IActivityRepository activityRepository, DefaultActivityChainFactory defaultActivityChainFactory) {
         this.activityRepository = activityRepository;
         this.defaultActivityChainFactory = defaultActivityChainFactory;
     }

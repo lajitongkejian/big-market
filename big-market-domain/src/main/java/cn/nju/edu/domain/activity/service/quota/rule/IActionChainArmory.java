@@ -1,4 +1,4 @@
-package cn.nju.edu.domain.activity.service.rule;
+package cn.nju.edu.domain.activity.service.quota.rule;
 
 /**
  * 项目名称：big-market

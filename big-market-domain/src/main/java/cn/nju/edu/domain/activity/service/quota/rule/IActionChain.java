@@ -1,4 +1,4 @@
-package cn.nju.edu.domain.activity.service.rule;
+package cn.nju.edu.domain.activity.service.quota.rule;
 
 import cn.nju.edu.domain.activity.model.entity.ActivityCountEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivityEntity;

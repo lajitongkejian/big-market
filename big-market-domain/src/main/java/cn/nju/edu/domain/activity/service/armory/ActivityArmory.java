@@ -13,7 +13,7 @@ import java.util.Date;
  * 类名称：ActivityArmory
  * 作者：tkj
  * 日期：2024/12/5
- * 描述：
+ * 描述：缓存sku库存，以及提供库存扣减方法
  */
 @Service
 public class ActivityArmory implements IActivityArmory,IActivityDispatch{

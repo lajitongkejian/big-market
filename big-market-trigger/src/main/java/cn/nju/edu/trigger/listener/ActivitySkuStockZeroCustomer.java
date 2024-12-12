@@ -1,6 +1,6 @@
 package cn.nju.edu.trigger.listener;
 
-import cn.nju.edu.domain.activity.service.ISkuStock;
+import cn.nju.edu.domain.activity.service.IRaffleActivitySkuStockService;
 import cn.nju.edu.types.event.BaseEvent;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
@@ -24,7 +24,7 @@ import javax.annotation.Resource;
 public class ActivitySkuStockZeroCustomer {
 
     @Resource
-    private ISkuStock skuStock;
+    private IRaffleActivitySkuStockService skuStock;
 
 
     @Value("${spring.rabbitmq.topic.activity_sku_stock_zero}")

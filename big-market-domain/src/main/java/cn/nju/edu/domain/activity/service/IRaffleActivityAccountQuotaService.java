@@ -9,9 +9,9 @@ import cn.nju.edu.domain.activity.model.entity.SkuRechargeEntity;
  * 类名称：IRaffleOrder
  * 作者：tkj
  * 日期：2024/12/1
- * 描述：
+ * 描述：创建领取抽奖次数的订单
  */
-public interface IRaffleOrder {
+public interface IRaffleActivityAccountQuotaService {
     /**
      * 以sku创建抽奖活动订单，获得参与抽奖资格（可消耗的次数）
      *

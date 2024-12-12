@@ -1,11 +1,10 @@
-package cn.nju.edu.domain.activity.service.rule.factory;
+package cn.nju.edu.domain.activity.service.quota.rule.factory;
 
-import cn.nju.edu.domain.activity.service.rule.IActionChain;
+import cn.nju.edu.domain.activity.service.quota.rule.IActionChain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.Map;
 
 /**

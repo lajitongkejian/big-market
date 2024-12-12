@@ -7,9 +7,9 @@ import cn.nju.edu.domain.activity.model.vo.ActivitySkuStockKeyVO;
  * 类名称：ISkuStock
  * 作者：tkj
  * 日期：2024/12/7
- * 描述：活动sku库存处理接口
+ * 描述：活动sku库存处理接口，对存储抽奖次数的库存进行扣减
  */
-public interface ISkuStock {
+public interface IRaffleActivitySkuStockService {
     /**
      * 获取活动sku库存消耗队列
      *
