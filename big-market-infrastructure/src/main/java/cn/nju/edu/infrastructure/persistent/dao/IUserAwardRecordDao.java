@@ -1,5 +1,7 @@
 package cn.nju.edu.infrastructure.persistent.dao;
 
+import cn.bugstack.middleware.db.router.annotation.DBRouterStrategy;
+import cn.nju.edu.infrastructure.persistent.po.UserAwardRecord;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -10,5 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
  * 描述：
  */
 @Mapper
+@DBRouterStrategy(splitTable = true)
 public interface IUserAwardRecordDao {
+    void insert(UserAwardRecord userAwardRecord);
 }

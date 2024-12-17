@@ -26,5 +26,9 @@ public class Task {
     private Date createTime;
     /** 更新时间 */
     private Date updateTime;
+    /** 消息Id */
+    private String messageId;
+    /** 用户Id */
+    private String userId;
 
 }
