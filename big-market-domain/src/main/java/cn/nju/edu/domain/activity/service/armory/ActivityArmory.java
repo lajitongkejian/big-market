@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 项目名称：big-market
@@ -41,5 +42,17 @@ public class ActivityArmory implements IActivityArmory,IActivityDispatch{
     public boolean subtractActivitySkuStock(Long sku, Date endDateTime) {
         String cacheKey = Constants.RedisKey.ACTIVITY_SKU_STOCK_COUNT_KEY + sku;
         return activityRepository.subtractActivitySkuStock(sku,cacheKey,endDateTime);
+    }
+
+    @Override
+    public boolean assembleActivitySkuByActivityId(Long activityId) {
+        List<ActivitySkuEntity> activitySkuEntities = activityRepository.queryActivitySkuListByActivityId(activityId);
+        for(ActivitySkuEntity activitySkuEntity : activitySkuEntities){
+            cacheActivitySkuStockCount(activitySkuEntity.getSku(),activitySkuEntity.getStockCount());
+            //预热数据
+            activityRepository.queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
+        }
+        activityRepository.queryRaffleActivityByActivityId(activityId);
+        return true;
     }
 }

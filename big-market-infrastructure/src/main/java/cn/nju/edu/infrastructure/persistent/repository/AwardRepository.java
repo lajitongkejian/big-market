@@ -9,8 +9,10 @@ import cn.nju.edu.domain.award.repository.IAwardRepository;
 import cn.nju.edu.infrastructure.event.EventPublisher;
 import cn.nju.edu.infrastructure.persistent.dao.ITaskDao;
 import cn.nju.edu.infrastructure.persistent.dao.IUserAwardRecordDao;
+import cn.nju.edu.infrastructure.persistent.dao.IUserRaffleOrderDao;
 import cn.nju.edu.infrastructure.persistent.po.Task;
 import cn.nju.edu.infrastructure.persistent.po.UserAwardRecord;
+import cn.nju.edu.infrastructure.persistent.po.UserRaffleOrder;
 import cn.nju.edu.types.enums.ResponseCode;
 import cn.nju.edu.types.exception.AppException;
 import com.alibaba.fastjson.JSON;
@@ -45,6 +47,8 @@ public class AwardRepository implements IAwardRepository {
     private TransactionTemplate transactionTemplate;
     @Resource
     private IDBRouterStrategy routerStrategy;
+    @Resource
+    private IUserRaffleOrderDao userRaffleOrderDao;
 
     @Override
     public void saveUserAwardRecord(UserAwardRecordAggregate userAwardRecordAggregate) {
@@ -71,14 +75,27 @@ public class AwardRepository implements IAwardRepository {
         task.setMessageId(taskEntity.getMessageId());
         task.setUserId(taskEntity.getUserId());
 
+        UserRaffleOrder userRaffleOrder = new UserRaffleOrder();
+        userRaffleOrder.setUserId(userAwardRecordEntity.getUserId());
+        userRaffleOrder.setOrderId(userAwardRecordEntity.getOrderId());
+
         //事务执行
         try{
             routerStrategy.doRouter(userId);
             transactionTemplate.execute(status -> {
                 //写入数据库
                 try{
+                    //写入中奖记录
                     userAwardRecordDao.insert(userAwardRecord);
+                    //写入任务
                     taskDao.insert(task);
+                    //更新订单状态
+                    int count = userRaffleOrderDao.updateUserRaffleOrderStateUsed(userRaffleOrder);
+                    if(1 != count){
+                        status.setRollbackOnly();
+                        log.error("写入中奖记录，用户抽奖单已使用过，不可重复抽奖 userId: {} activityId: {} awardId: {}", userId, activityId, awardId);
+                        throw new AppException(ResponseCode.ACTIVITY_RAFFLE_ORDER_ERROR.getCode(),ResponseCode.ACTIVITY_RAFFLE_ORDER_ERROR.getInfo());
+                    }
                     return 1;
 
                 }catch (DuplicateKeyException e){

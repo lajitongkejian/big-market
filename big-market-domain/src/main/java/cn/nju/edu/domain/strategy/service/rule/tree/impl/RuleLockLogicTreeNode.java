@@ -1,10 +1,13 @@
 package cn.nju.edu.domain.strategy.service.rule.tree.impl;
 
 import cn.nju.edu.domain.strategy.model.vo.RuleLogicCheckTypeVO;
+import cn.nju.edu.domain.strategy.repository.IStrategyRepository;
 import cn.nju.edu.domain.strategy.service.rule.tree.ILogicTreeNode;
 import cn.nju.edu.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 /**
  * 项目名称：big-market
@@ -16,8 +19,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component("rule_lock")
 public class RuleLockLogicTreeNode implements ILogicTreeNode {
-
-    private Long userRaffleCount = 10L;
+    @Resource
+    private IStrategyRepository strategyRepository;
     @Override
     public DefaultTreeFactory.TreeActionEntity logic(String userId, Long strategyId, Integer awardId, String ruleValue) {
         log.info("规则过滤-次数解锁：userId;{} strategyId;{} awardId;{} ruleValue;{}", userId, strategyId, awardId, ruleValue);
@@ -27,7 +30,7 @@ public class RuleLockLogicTreeNode implements ILogicTreeNode {
         } catch (Exception e) {
             throw new RuntimeException("规则过滤。次数异常，ruleValue："+ruleValue+"配置不正确");
         }
-
+        Integer userRaffleCount = strategyRepository.queryTodayUserRaffleCount(strategyId,userId);
         if(userRaffleCount >= raffleCount){
             return DefaultTreeFactory.TreeActionEntity.builder()
                     .ruleLogicCheckType(RuleLogicCheckTypeVO.ALLOW)

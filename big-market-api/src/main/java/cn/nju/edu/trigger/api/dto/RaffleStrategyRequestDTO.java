@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RaffleRequestDTO {
+public class RaffleStrategyRequestDTO {
 
     private Long strategyId;
 }

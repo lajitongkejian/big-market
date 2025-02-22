@@ -6,6 +6,7 @@ import cn.nju.edu.domain.activity.model.entity.*;
 import cn.nju.edu.domain.activity.model.vo.ActivitySkuStockKeyVO;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -49,4 +50,6 @@ public interface IActivityRepository {
 
 
     ActivityAccountEntity queryActivityAccountByUserId(String userId, Long activityId);
+
+    List<ActivitySkuEntity> queryActivitySkuListByActivityId(Long activityId);
 }

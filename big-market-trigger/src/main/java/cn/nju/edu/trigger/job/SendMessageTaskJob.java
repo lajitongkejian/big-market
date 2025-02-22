@@ -35,15 +35,12 @@ public class SendMessageTaskJob {
 
         try{
             int dbCount = routerStrategy.dbCount();
-
             for (int i = 1; i <= dbCount; i++) {
                 //每个分库用线程池同时操作
-
                 int finalI = i;
                 threadPoolExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-
                         try{
                             routerStrategy.setDBKey(finalI);
                             routerStrategy.setTBKey(0);
@@ -62,12 +59,10 @@ public class SendMessageTaskJob {
                                         }
                                     }
                                 });
-
                             }
                         }finally {
                             routerStrategy.clear();
                         }
-
                     }
                 });
 

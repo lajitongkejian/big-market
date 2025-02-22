@@ -31,4 +31,6 @@ public class RaffleAwardEntity {
      * 奖品排序序号
      */
     private Integer sort;
+
+    private String awardTitle;
 }

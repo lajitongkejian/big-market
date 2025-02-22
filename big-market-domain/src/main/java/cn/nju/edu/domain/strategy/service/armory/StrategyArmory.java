@@ -22,7 +22,8 @@ import java.util.*;
  * 类名称：StrategyArmory
  * 作者：tkj
  * 日期：2024/11/9
- * 描述：
+ * 描述：抽奖策略装配类，负责把奖池及每种奖品的概率初始化为计算抽奖的形式，并且可以装配各种各样的抽奖活动中的奖池
+ * 并且可以进行抽奖操作
  */
 @Service
 @Slf4j
@@ -87,9 +88,6 @@ public class StrategyArmory implements IStrategyArmory,IStrategyDispatch {
             Integer awardCount = strategyAwardEntity.getAwardCountSurplus();
             cacheStrategyAwardCount(strategyId,awardId,awardCount);
         }
-
-
-
         StrategyEntity strategyEntity = strategyRepository.queryStrategyByStrategyId(strategyId);
         String ruleWeight = strategyEntity.getRuleWeight();
         //说明无规则限制
@@ -109,6 +107,13 @@ public class StrategyArmory implements IStrategyArmory,IStrategyDispatch {
             assembleLotteryStrategy2(String.valueOf(strategyId).concat("_").concat(key),awardEntitiesFiltered);
         }
 
+        return true;
+    }
+
+    @Override
+    public boolean assembleLotteryStrategyByActivityId(Long activityId) {
+        Long strategyId = strategyRepository.queryStrategyIdByActivityId(activityId);
+        assembleLotteryStrategy2(strategyId);
         return true;
     }
 

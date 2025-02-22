@@ -13,5 +13,6 @@ public interface IStrategyArmory {
     //重构alias抽奖算法
     boolean assembleLotteryStrategy2(Long strategyId);
 
+    boolean assembleLotteryStrategyByActivityId(Long activityId);
 
 }

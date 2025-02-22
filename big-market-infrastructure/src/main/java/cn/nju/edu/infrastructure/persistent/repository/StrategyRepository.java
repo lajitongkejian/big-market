@@ -12,9 +12,6 @@ import cn.nju.edu.types.common.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RDelayedQueue;
-import org.redisson.api.RMap;
-import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -54,6 +51,12 @@ public class StrategyRepository implements IStrategyRepository{
 
     @Resource
     private IRuleTreeNodeLineDao ruleTreeNodeLineDao;
+
+    @Resource
+    private IRaffleActivityDao raffleActivityDao;
+
+    @Resource
+    private IRaffleActivityAccountDayDao raffleActivityAccountDayDao;
 
 
     /**
@@ -327,5 +330,24 @@ public class StrategyRepository implements IStrategyRepository{
                   .build();
         redissonService.setValue(cacheKey, strategyAwardEntity);
         return strategyAwardEntity;
+    }
+
+    @Override
+    public Long queryStrategyIdByActivityId(Long activityId) {
+        return raffleActivityDao.queryStrategyIdByActivityId(activityId);
+    }
+
+    @Override
+    public Integer queryTodayUserRaffleCount(Long strategyId, String userId) {
+        Long activityId = raffleActivityDao.queryActivityIdByStrategyId(strategyId);
+        RaffleActivityAccountDay raffleActivityAccountDay = new RaffleActivityAccountDay();
+        raffleActivityAccountDay.setActivityId(activityId);
+        raffleActivityAccountDay.setUserId(userId);
+        raffleActivityAccountDay.setActivityId(activityId);
+        raffleActivityAccountDay.setDay(raffleActivityAccountDay.currentDay());
+
+        RaffleActivityAccountDay response = raffleActivityAccountDayDao.queryActivityAccountDayByUserId(raffleActivityAccountDay);
+        if(null == response) return 0;
+        return response.getDayCount() - response.getDayCountSurplus();
     }
 }

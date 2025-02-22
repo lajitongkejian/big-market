@@ -2,8 +2,8 @@ package cn.nju.edu.trigger.api;
 
 import cn.nju.edu.trigger.api.dto.RaffleAwardListRequestDTO;
 import cn.nju.edu.trigger.api.dto.RaffleAwardListResponseDTO;
-import cn.nju.edu.trigger.api.dto.RaffleRequestDTO;
-import cn.nju.edu.trigger.api.dto.RaffleResponseDTO;
+import cn.nju.edu.trigger.api.dto.RaffleStrategyRequestDTO;
+import cn.nju.edu.trigger.api.dto.RaffleStrategyResponseDTO;
 import cn.nju.edu.types.model.Response;
 
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
  * 日期：2024/11/21
  * 描述：
  */
-public interface IRaffleService {
+public interface IRaffleStrategyService {
 
     /**
      * 策略装配接口
@@ -34,5 +34,5 @@ public interface IRaffleService {
 
     Response<List<RaffleAwardListResponseDTO>> queryRaffleAwardList(RaffleAwardListRequestDTO requestDTO);
 
-    Response<RaffleResponseDTO> randomRaffle(RaffleRequestDTO requestDTO);
+    Response<RaffleStrategyResponseDTO> randomRaffle(RaffleStrategyRequestDTO requestDTO);
 }

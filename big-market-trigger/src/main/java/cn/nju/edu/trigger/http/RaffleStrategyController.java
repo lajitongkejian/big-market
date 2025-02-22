@@ -5,13 +5,12 @@ import cn.nju.edu.domain.strategy.model.entity.RaffleFactorEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.nju.edu.domain.strategy.service.IRaffleStrategy;
 import cn.nju.edu.domain.strategy.service.armory.IStrategyArmory;
-import cn.nju.edu.domain.strategy.service.armory.IStrategyDispatch;
 import cn.nju.edu.domain.strategy.service.rule.IRaffleAward;
-import cn.nju.edu.trigger.api.IRaffleService;
+import cn.nju.edu.trigger.api.IRaffleStrategyService;
 import cn.nju.edu.trigger.api.dto.RaffleAwardListRequestDTO;
 import cn.nju.edu.trigger.api.dto.RaffleAwardListResponseDTO;
-import cn.nju.edu.trigger.api.dto.RaffleRequestDTO;
-import cn.nju.edu.trigger.api.dto.RaffleResponseDTO;
+import cn.nju.edu.trigger.api.dto.RaffleStrategyRequestDTO;
+import cn.nju.edu.trigger.api.dto.RaffleStrategyResponseDTO;
 import cn.nju.edu.types.enums.ResponseCode;
 import cn.nju.edu.types.model.Response;
 import com.alibaba.fastjson.JSON;
@@ -32,8 +31,8 @@ import java.util.List;
 @Slf4j
 @RestController
 @CrossOrigin("${app.config.cross-origin}")
-@RequestMapping("/api/${app.config.api-version}/raffle/")
-public class IRaffleController implements IRaffleService {
+@RequestMapping("/api/${app.config.api-version}/raffle/strategy")
+public class RaffleStrategyController implements IRaffleStrategyService {
 
     @Resource
     private IStrategyArmory strategyArmory;
@@ -104,7 +103,7 @@ public class IRaffleController implements IRaffleService {
 
     @RequestMapping(value = "random_raffle",method = RequestMethod.POST)
     @Override
-    public Response<RaffleResponseDTO> randomRaffle(@RequestBody RaffleRequestDTO requestDTO) {
+    public Response<RaffleStrategyResponseDTO> randomRaffle(@RequestBody RaffleStrategyRequestDTO requestDTO) {
         try {
             log.info("随机抽奖开始，strategyId:{}",requestDTO.getStrategyId());
             RaffleFactorEntity raffleFactorEntity = RaffleFactorEntity.builder()
@@ -112,11 +111,11 @@ public class IRaffleController implements IRaffleService {
                     .strategyId(requestDTO.getStrategyId())
                     .build();
             RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(raffleFactorEntity);
-            RaffleResponseDTO raffleResponseDTO = RaffleResponseDTO.builder()
+            RaffleStrategyResponseDTO raffleResponseDTO = RaffleStrategyResponseDTO.builder()
                     .awardId(raffleAwardEntity.getAwardId())
                     .awardIndex(raffleAwardEntity.getSort())
                     .build();
-            Response<RaffleResponseDTO> response = Response.<RaffleResponseDTO>builder()
+            Response<RaffleStrategyResponseDTO> response = Response.<RaffleStrategyResponseDTO>builder()
                     .data(raffleResponseDTO)
                     .code(ResponseCode.SUCCESS.getCode())
                     .info(ResponseCode.SUCCESS.getInfo())
@@ -125,7 +124,7 @@ public class IRaffleController implements IRaffleService {
             return response;
         }catch (Exception e){
             log.error("随机抽奖失败，strategyId:{}",requestDTO.getStrategyId(),e);
-            return Response.<RaffleResponseDTO>builder()
+            return Response.<RaffleStrategyResponseDTO>builder()
                     .code(ResponseCode.UN_ERROR.getCode())
                     .info(ResponseCode.UN_ERROR.getInfo())
                     .build();
