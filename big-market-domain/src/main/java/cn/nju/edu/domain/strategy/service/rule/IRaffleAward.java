@@ -13,4 +13,5 @@ import java.util.List;
  */
 public interface IRaffleAward {
     List<StrategyAwardEntity> queryStrategyAwardByStrategyId(Long strategyId);
+    List<StrategyAwardEntity> queryStrategyAwardByActivityId(Long activityId);
 }

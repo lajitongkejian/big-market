@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * 项目名称：big-market
  * 类名称：RaffleFactorEntity
@@ -31,4 +33,8 @@ public class RaffleFactorEntity {
      * 抽奖奖品ID
      */
     private Integer awardId;
+    /**
+     * 抽奖奖品ID
+     */
+    private Date endDateTime;
 }

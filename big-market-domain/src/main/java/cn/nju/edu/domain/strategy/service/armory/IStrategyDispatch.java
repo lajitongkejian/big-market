@@ -1,5 +1,7 @@
 package cn.nju.edu.domain.strategy.service.armory;
 
+import java.util.Date;
+
 /**
  * 项目名称：big-market
  * 类名称：IStrategyDispath
@@ -16,6 +18,6 @@ public interface IStrategyDispatch {
     //无过滤规则
     Integer getRandomAwardId2(Long strategyId);
     //库存扣减方法
-    Boolean subtractionAwardStock(Long strategyId,Integer awardId);
+    Boolean subtractionAwardStock(Long strategyId, Integer awardId, Date endDateTime);
 
 }

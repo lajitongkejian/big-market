@@ -85,6 +85,7 @@ public class StrategyRepository implements IStrategyRepository{
                           .awardSubtitle(strategyAward.getAwardSubtitle())
                           .sort(strategyAward.getSort())
                           .awardTitle(strategyAward.getAwardTitle())
+                          .ruleModels(strategyAward.getRuleModels())
                           .build();
              strategyAwardEntities.add(strategyAwardEntity);
         }
@@ -266,18 +267,29 @@ public class StrategyRepository implements IStrategyRepository{
 
     @Override
     public Boolean subtractionAwardStock(String key) {
+        return subtractionAwardStock(key,null);
+
+    }
+
+    @Override
+    public Boolean subtractionAwardStock(String key, Date endDateTime) {
         long surplus = redissonService.decr(key);
         if(surplus < 0){
             redissonService.setValue(key,0);
             return false;
         }
         String lockKey = key+"_"+surplus;
-        Boolean lock = redissonService.setNx(lockKey);
+        Boolean lock;
+        if(null != endDateTime){
+            long expireMillis = endDateTime.getTime() - System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1);
+            lock = redissonService.setNx(lockKey,expireMillis,TimeUnit.MILLISECONDS);
+        }else{
+            lock = redissonService.setNx(lockKey);
+        }
         if(!lock){
             log.info("策略奖品库存加锁失败",lockKey);
         }
         return lock;
-
     }
 
     @Override
@@ -349,5 +361,16 @@ public class StrategyRepository implements IStrategyRepository{
         RaffleActivityAccountDay response = raffleActivityAccountDayDao.queryActivityAccountDayByUserId(raffleActivityAccountDay);
         if(null == response) return 0;
         return response.getDayCount() - response.getDayCountSurplus();
+    }
+
+    @Override
+    public Map<String, Integer> queryAwardRuleLockCount(String[] treeIds) {
+        if(null == treeIds || treeIds.length == 0) return new HashMap<>();
+        List<RuleTreeNode> ruleTreeNodes = ruleTreeNodeDao.queryRuleLocks(treeIds);
+        Map<String, Integer> map = new HashMap<>();
+        for(RuleTreeNode ruleTreeNode : ruleTreeNodes){
+            map.put(ruleTreeNode.getTreeId(),Integer.valueOf(ruleTreeNode.getRuleValue()));
+        }
+        return map;
     }
 }

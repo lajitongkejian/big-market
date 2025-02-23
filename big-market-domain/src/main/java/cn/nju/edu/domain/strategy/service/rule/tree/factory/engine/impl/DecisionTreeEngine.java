@@ -10,6 +10,7 @@ import cn.nju.edu.domain.strategy.service.rule.tree.factory.engine.IDecisionTree
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
 
     //执行决策树规则过滤逻辑的方法
     @Override
-    public DefaultTreeFactory.StrategyAwardVO process(String userId, Long strategyId, Integer awardId) {
+    public DefaultTreeFactory.StrategyAwardVO process(String userId, Long strategyId, Integer awardId, Date endDateTime) {
         DefaultTreeFactory.StrategyAwardVO strategyAwardData = null;
         //获取基础信息:根节点与节点的map映射
         String nextNode = ruleTreeVO.getTreeRootRuleNode();
@@ -46,7 +47,7 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
         while(null != ruleTreeNode) {
             ILogicTreeNode logicTreeNode = logicTreeNodeGroup.get(ruleTreeNode.getRuleKey());
             String ruleValue = ruleTreeNode.getRuleValue();
-            DefaultTreeFactory.TreeActionEntity logicEntity = logicTreeNode.logic(userId, strategyId, awardId,ruleValue);
+            DefaultTreeFactory.TreeActionEntity logicEntity = logicTreeNode.logic(userId, strategyId, awardId,ruleValue,endDateTime);
             //查看节点过滤状态
             RuleLogicCheckTypeVO ruleLogicCheckTypeVO = logicEntity.getRuleLogicCheckType();
             strategyAwardData = logicEntity.getStrategyAwardData();

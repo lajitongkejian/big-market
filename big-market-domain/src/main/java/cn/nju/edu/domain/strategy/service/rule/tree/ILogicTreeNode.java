@@ -2,6 +2,8 @@ package cn.nju.edu.domain.strategy.service.rule.tree;
 
 import cn.nju.edu.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
 
+import java.util.Date;
+
 /**
  * 项目名称：big-market
  * 类名称：ILogicTreeNode
@@ -10,5 +12,5 @@ import cn.nju.edu.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
  * 描述：
  */
 public interface ILogicTreeNode {
-    DefaultTreeFactory.TreeActionEntity logic(String userId, Long strategyId, Integer awardId,String ruleValue);
+    DefaultTreeFactory.TreeActionEntity logic(String userId, Long strategyId, Integer awardId, String ruleValue, Date endDateTime);
 }

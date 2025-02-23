@@ -8,8 +8,10 @@ import cn.nju.edu.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 import cn.nju.edu.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 项目名称：big-market
@@ -59,6 +61,8 @@ public interface IStrategyRepository {
 
     Boolean subtractionAwardStock(String key);
 
+    Boolean subtractionAwardStock(String key, Date endDateTime);
+
     void awardStockConsumeSendQueue(StrategyAwardStockKeyVO build);
 
     StrategyAwardStockKeyVO takeQueueValue();
@@ -70,4 +74,6 @@ public interface IStrategyRepository {
     Long queryStrategyIdByActivityId(Long activityId);
 
     Integer queryTodayUserRaffleCount(Long strategyId, String userId);
+
+    Map<String, Integer> queryAwardRuleLockCount(String[] treeIds);
 }

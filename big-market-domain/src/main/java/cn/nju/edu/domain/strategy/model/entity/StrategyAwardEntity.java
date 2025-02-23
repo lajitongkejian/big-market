@@ -55,4 +55,7 @@ public class StrategyAwardEntity {
      * 抽奖奖品副标题
      */
     private String awardSubtitle;
+    /** 规则模型，rule配置的模型同步到此表，便于使用 */
+    private String ruleModels;
+
 }

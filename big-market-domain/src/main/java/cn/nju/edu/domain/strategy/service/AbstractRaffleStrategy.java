@@ -11,6 +11,8 @@ import cn.nju.edu.types.enums.ResponseCode;
 import cn.nju.edu.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
+
 /**
  * 项目名称：big-market
  * 类名称：AbstractRaffleStrategy
@@ -52,7 +54,7 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
             return buildRaffleAwardEntity(strategyAwardVO.getAwardId(),strategyId,null);
         }
         //3、规则树过滤抽奖
-        DefaultTreeFactory.StrategyAwardVO treeStrategyAwardVO = raffleLogicTree(userId,strategyId,strategyAwardVO.getAwardId());
+        DefaultTreeFactory.StrategyAwardVO treeStrategyAwardVO = raffleLogicTree(userId,strategyId,strategyAwardVO.getAwardId(),raffleFactorEntity.getEndDateTime());
         log.info("抽奖策略计算：规则树{} {} {} {}",userId,strategyId,treeStrategyAwardVO.getAwardId(),treeStrategyAwardVO.getAwardRuleValue());
 
 
@@ -87,6 +89,14 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
      * @return 过滤结果【奖品ID，会根据抽奖次数判断、库存判断、兜底兜里返回最终的可获得奖品信息】
      */
     public abstract DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Long strategyId, Integer awardId);
-
-
+    /**
+     * 抽奖结果过滤，决策树抽象方法
+     *
+     * @param userId     用户ID
+     * @param strategyId 策略ID
+     * @param awardId    奖品ID
+     * @param endDateTime   活动结束时间
+     * @return 过滤结果【奖品ID，会根据抽奖次数判断、库存判断、兜底兜里返回最终的可获得奖品信息】
+     */
+    public abstract DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Long strategyId, Integer awardId, Date endDateTime);
 }

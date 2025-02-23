@@ -33,4 +33,6 @@ public class RaffleAwardEntity {
     private Integer sort;
 
     private String awardTitle;
+
+
 }

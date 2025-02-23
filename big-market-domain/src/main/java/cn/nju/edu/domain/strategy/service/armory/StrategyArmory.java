@@ -218,8 +218,8 @@ public class StrategyArmory implements IStrategyArmory,IStrategyDispatch {
 
 
     @Override
-    public Boolean subtractionAwardStock(Long strategyId, Integer awardId) {
+    public Boolean subtractionAwardStock(Long strategyId, Integer awardId,Date endDateTime) {
         String key = Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY + strategyId + "_" + awardId;
-        return strategyRepository.subtractionAwardStock(key);
+        return strategyRepository.subtractionAwardStock(key,endDateTime);
     }
 }
