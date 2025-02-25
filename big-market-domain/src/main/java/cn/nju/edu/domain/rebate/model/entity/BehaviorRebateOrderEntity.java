@@ -31,4 +31,6 @@ public class BehaviorRebateOrderEntity {
     private String rebateConfig;
     /** 业务ID - 拼接的唯一值 */
     private String bizId;
+    /** 业务防重id*/
+    private String outBusinessNo;
 }

@@ -30,7 +30,7 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
     @Resource
     private IStrategyDispatch strategyDispatch;
 
-    private final Long userPoints = 4500L;
+//    private final Long userPoints = 4500L;
 
     @Override
     public DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId) {
@@ -42,6 +42,10 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
         }
         List<Long> keys = new ArrayList<>(map.keySet());
         Collections.sort(keys);
+
+        Integer userPoints = strategyRepository.queryActivityAccountTotalUseCount(userId,strategyId);
+
+
         Long nextValue = keys.stream()
                 .filter(key -> userPoints >= key)
                 .max(Comparator.naturalOrder())

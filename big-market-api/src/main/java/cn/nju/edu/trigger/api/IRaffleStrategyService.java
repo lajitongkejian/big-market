@@ -1,9 +1,6 @@
 package cn.nju.edu.trigger.api;
 
-import cn.nju.edu.trigger.api.dto.RaffleAwardListRequestDTO;
-import cn.nju.edu.trigger.api.dto.RaffleAwardListResponseDTO;
-import cn.nju.edu.trigger.api.dto.RaffleStrategyRequestDTO;
-import cn.nju.edu.trigger.api.dto.RaffleStrategyResponseDTO;
+import cn.nju.edu.trigger.api.dto.*;
 import cn.nju.edu.types.model.Response;
 
 import java.util.List;
@@ -35,4 +32,6 @@ public interface IRaffleStrategyService {
     Response<List<RaffleAwardListResponseDTO>> queryRaffleAwardList(RaffleAwardListRequestDTO requestDTO);
 
     Response<RaffleStrategyResponseDTO> randomRaffle(RaffleStrategyRequestDTO requestDTO);
+
+    Response<List<RaffleStrategyRuleWeightResponseDTO>> queryRaffleStrategyRuleWeight(RaffleStrategyRuleWeightRequestDTO request);
 }

@@ -1,6 +1,7 @@
 package cn.nju.edu.domain.rebate.repository;
 
 import cn.nju.edu.domain.rebate.model.aggregate.BehaviorRebateAggregate;
+import cn.nju.edu.domain.rebate.model.entity.BehaviorRebateOrderEntity;
 import cn.nju.edu.domain.rebate.model.vo.BehaviorTypeVO;
 import cn.nju.edu.domain.rebate.model.vo.DailyBehaviorRebateVO;
 
@@ -17,4 +18,6 @@ public interface IBehaviorRebateRepository {
     List<DailyBehaviorRebateVO> queryDailyBehaviorRebateConfig(BehaviorTypeVO behaviorType);
 
     void saveUserRebateRecord(String userId, List<BehaviorRebateAggregate> behaviorRebateAggregates);
+
+    List<BehaviorRebateOrderEntity> queryOrderByOutBusinessNo(String businessNo, String userId);
 }

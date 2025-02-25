@@ -34,6 +34,8 @@ public class UserBehaviorRebateOrder {
     private Date createTime;
     /** 更新时间 */
     private Date updateTime;
+    /** 业务防重id*/
+    private String outBusinessNo;
 
 }
 

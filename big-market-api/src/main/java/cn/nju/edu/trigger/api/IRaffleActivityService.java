@@ -2,6 +2,8 @@ package cn.nju.edu.trigger.api;
 
 import cn.nju.edu.trigger.api.dto.ActivityDrawRequestDTO;
 import cn.nju.edu.trigger.api.dto.ActivityDrawResponseDTO;
+import cn.nju.edu.trigger.api.dto.UserActivityAccountRequestDTO;
+import cn.nju.edu.trigger.api.dto.UserActivityAccountResponseDTO;
 import cn.nju.edu.types.model.Response;
 
 /**
@@ -25,5 +27,24 @@ public interface IRaffleActivityService {
      * @return 返回结果
      */
     Response<ActivityDrawResponseDTO> draw(ActivityDrawRequestDTO request);
+
+    /**
+     * 日历签到返利接口
+     *
+     * @param userId 用户ID
+     * @return 签到结果
+     */
+    public Response<Boolean> calendarSignRebate(String userId);
+
+    /**
+     * 日历签到返利接口是否返利
+     *
+     * @param userId 用户ID
+     * @return 签到结果
+     */
+    public Response<Boolean> isCalendarSignRebate(String userId);
+
+
+    public Response<UserActivityAccountResponseDTO> queryUserActivityAccount(UserActivityAccountRequestDTO request);
 
 }

@@ -1,5 +1,6 @@
 package cn.nju.edu.domain.activity.service;
 
+import cn.nju.edu.domain.activity.model.entity.ActivityAccountEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivityOrderEntity;
 import cn.nju.edu.domain.activity.model.entity.ActivityShopCartEntity;
 import cn.nju.edu.domain.activity.model.entity.SkuRechargeEntity;
@@ -33,4 +34,8 @@ public interface IRaffleActivityAccountQuotaService {
     String createSkuRechargeOrder(SkuRechargeEntity skuRechargeEntity);
 
     Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId);
+
+    ActivityAccountEntity queryActivityAccount(Long activityId,String userId);
+
+    Integer queryRaffleActivityAccountPartakeCount(Long activityId, String userId);
 }

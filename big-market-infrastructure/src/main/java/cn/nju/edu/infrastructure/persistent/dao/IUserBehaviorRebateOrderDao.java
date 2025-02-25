@@ -1,8 +1,11 @@
 package cn.nju.edu.infrastructure.persistent.dao;
 
+import cn.bugstack.middleware.db.router.annotation.DBRouter;
 import cn.bugstack.middleware.db.router.annotation.DBRouterStrategy;
 import cn.nju.edu.infrastructure.persistent.po.UserBehaviorRebateOrder;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 项目名称：big-market
@@ -17,5 +20,7 @@ public interface IUserBehaviorRebateOrderDao {
 
     void insert(UserBehaviorRebateOrder userBehaviorRebateOrder);
 
+    @DBRouter
+    List<UserBehaviorRebateOrder> queryOrderByOutBusinessNo(UserBehaviorRebateOrder userBehaviorRebateOrder);
 }
 

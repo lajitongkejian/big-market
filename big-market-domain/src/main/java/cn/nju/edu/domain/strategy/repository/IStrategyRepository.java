@@ -4,6 +4,7 @@ import cn.nju.edu.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyEntity;
 import cn.nju.edu.domain.strategy.model.entity.StrategyRuleEntity;
 import cn.nju.edu.domain.strategy.model.vo.RuleTreeVO;
+import cn.nju.edu.domain.strategy.model.vo.RuleWeightVO;
 import cn.nju.edu.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 import cn.nju.edu.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 
@@ -76,4 +77,8 @@ public interface IStrategyRepository {
     Integer queryTodayUserRaffleCount(Long strategyId, String userId);
 
     Map<String, Integer> queryAwardRuleLockCount(String[] treeIds);
+
+    Integer queryActivityAccountTotalUseCount(String userId, Long strategyId);
+
+    List<RuleWeightVO> queryAwardRuleWeight(Long strategyId);
 }

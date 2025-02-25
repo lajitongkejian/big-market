@@ -1,6 +1,7 @@
 package cn.nju.edu.domain.rebate.service;
 
 import cn.nju.edu.domain.rebate.model.entity.BehaviorEntity;
+import cn.nju.edu.domain.rebate.model.entity.BehaviorRebateOrderEntity;
 
 import java.util.List;
 
@@ -15,5 +16,5 @@ public interface IBehaviorRebateService {
 
     List<String> createOrder(BehaviorEntity behaviorEntity);
 
-
+    List<BehaviorRebateOrderEntity> queryOrderByOutBusinessNo(String businessNo,String userId);
 }
